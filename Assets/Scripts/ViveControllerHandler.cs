@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using cakeslice;
 
 public class ViveControllerHandler : MonoBehaviour {
 
@@ -33,6 +34,7 @@ public class ViveControllerHandler : MonoBehaviour {
             if (touched.tag == "Target")
             {
                 doCollisionStuff(touched.GetComponent<AudioSource>());
+                toggleOutline(other.gameObject);
             }
         }
     }
@@ -40,10 +42,17 @@ public class ViveControllerHandler : MonoBehaviour {
     public void OnTriggerExit(Collider other)
     {
         colliding = false;
+        toggleOutline(other.gameObject);
+
     }
 
     private void doCollisionStuff(AudioSource sound)
     {
         sound.Play();
+    }
+
+    private void toggleOutline(GameObject target)
+    {
+        target.GetComponent<Outline>().enabled = !target.GetComponent<Outline>().enabled;
     }
 }
