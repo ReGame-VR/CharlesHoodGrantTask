@@ -219,7 +219,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e3e60cf5afa9864abe40b788ec7e7cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wiiObject: {fileID: 750931093}
   speed: 0
 --- !u!4 &371278574
 Transform:
