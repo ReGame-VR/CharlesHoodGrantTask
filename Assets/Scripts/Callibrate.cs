@@ -54,7 +54,6 @@ public class Callibrate : MonoBehaviour {
                 if (Controller.GetHairTriggerDown())
                 {
                     maxFront = pos.y;
-                    // Debug.Log(maxFront);
                     isFrontCal = true;
                 }
             }
@@ -64,7 +63,6 @@ public class Callibrate : MonoBehaviour {
                 if (Controller.GetHairTriggerDown())
                 {
                     maxBack = pos.y;
-                    // Debug.Log(maxBack);
                     isBackCal = true;
                 }
             }
@@ -74,7 +72,6 @@ public class Callibrate : MonoBehaviour {
                 if (Controller.GetHairTriggerDown())
                 {
                     maxLeft = pos.x;
-                    // Debug.Log(maxLeft);
                     isLeftCal = true;
                 }
             }
@@ -84,13 +81,11 @@ public class Callibrate : MonoBehaviour {
                 if (Controller.GetHairTriggerDown())
                 {
                     maxRight = pos.x;
-                    // Debug.Log(maxRight);
                     isRightCal = true;
                 }
             }
             else
             {
-                // SetInstructions("front: " + maxFront + " back: " + maxBack + " left: " + maxLeft + " right: " + maxRight);
                 SetInstructions("");
                 ShowCenterOfBalance(pos);
             }
@@ -124,8 +119,6 @@ public class Callibrate : MonoBehaviour {
         {
             pos_y = - (pos.y / maxBack) * height;
         }
-
-        Debug.Log(pos_x + ", " + pos_y);
 
         marker.GetComponent<RectTransform>().anchoredPosition = new Vector3(pos_x, pos_y, -10);
     }
