@@ -42,7 +42,8 @@ public class Callibrate : MonoBehaviour {
 	void Update () {
         if (Wii.GetRemoteCount() == 0)
         {
-            SetInstructions("Board not connecting.");
+            SetInstructions("Board not connected.");
+            // Wii.StartSearch();
         }
         else
         {
@@ -122,5 +123,4 @@ public class Callibrate : MonoBehaviour {
 
         marker.GetComponent<RectTransform>().anchoredPosition = new Vector3(pos_x, pos_y, -10);
     }
-
 }
