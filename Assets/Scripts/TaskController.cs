@@ -13,7 +13,7 @@ public class TaskController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+		// TODO: CREATE 6 POSITIONS FOR THEM 
 	}
 	
 	// Update is called once per frame

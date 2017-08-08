@@ -2,44 +2,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// A class for rotating one GameObject around another.
+/// </summary>
 public class Rotation : MonoBehaviour {
-    // The game object that will rotate around a center point
+    /// The game object that will rotate around a center point
     [SerializeField]
     private GameObject game_object;
 
-    // The axis the object will rotate around - I.E. the axis that doesn't move.
+    /// The axis the object will rotate around - I.E. the axis that doesn't move.
     [SerializeField]
     private RotationAxis axis;
 
-    // the distance, in Unity units, from center to gameobject
+    /// the distance, in Unity units, from center to gameobject
     [SerializeField]
     private float radius;
 
-    // if the object rotates clockwise (otherwise it rotates counter clockwise)
+    /// if the object rotates clockwise (otherwise it rotates counter clockwise)
     [SerializeField]
     private bool clockwise;
 
-    // The center x, y, and z coordinates and the x, y, and z coordinates of the gameobject
+    /// The center x, y, and z coordinates and the x, y, and z coordinates of the gameobject
     private float centerx, centery, centerz, posx, posy, posz;
 
-    // the angle that the rotating object is currently on - dictated by time
+    /// the angle that the rotating object is currently on - dictated by time
     private float angle;
 
-    // the time, in seconds, it takes for one rotation
+    /// the time, in seconds, it takes for one rotation
     [SerializeField]
     private float secondsPerRotation;
 
     private float speed; //2*PI in degress is 360, so you get 5 seconds to complete a circle
 
-    // Grab the current position of this object, initialize angle to 0, and set the speed based on
-    // given secondsperrotation parameter.
+    /// <summary>
+    /// Grab the current position of this object, initialize angle to 0, and set the speed based on
+    /// given secondsperrotation parameter.
+    /// </summary>
     void Start () {
         updateCenterPosn();
         angle = 0;
         speed = (2 * Mathf.PI) / secondsPerRotation;
     }
 
-    // updates the position based on rotation settings
+    /// <summary>
+    /// updates the position based on rotation settings
+    /// </summary>
     void Update()
     {
         // in case the object itself is moving
@@ -73,8 +80,10 @@ public class Rotation : MonoBehaviour {
         game_object.transform.position = new Vector3(posx, posy, posz);
     }
 
-    // helper method that updates the center position - used in Start for initialization and 
-    // Update for updating position of center if it is moving
+    /// <summary>
+    /// helper method that updates the center position - used in Start for initialization and 
+    /// Update for updating position of center if it is moving
+    /// </summary>
     private void updateCenterPosn()
     {
         centerx = transform.position.x;
@@ -82,7 +91,12 @@ public class Rotation : MonoBehaviour {
         centerz = transform.position.z;
     }
 
-    // A helper method that updates the position of the gameobject with the given values
+    /// <summary>
+    /// A helper method that updates the position of the gameobject with the given values
+    /// </summary>
+    /// <param name="x"> the x position</param>
+    /// <param name="y">the y position </param>
+    /// <param name="z"> the z position </param>
     private void updatePosn(float x, float y, float z)
     {
         posx = x;
@@ -90,5 +104,8 @@ public class Rotation : MonoBehaviour {
         posz = z;
     }
 
+    /// <summary>
+    /// An enumeration of the axes.
+    /// </summary>
     private enum RotationAxis { x, y, z };
 }
