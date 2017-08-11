@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TaskController : MonoBehaviour {
     /// randomly generate numbers - chooses which target will come up
@@ -8,6 +9,9 @@ public class TaskController : MonoBehaviour {
 
     /// an array of positions where the targets are
     private Vector3[] posns = new Vector3[6];
+
+    [SerializeField]
+    private Text text;
 
     private bool isActive;
 
@@ -18,7 +22,7 @@ public class TaskController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        text.text = Wii.GetCenterOfBalance(0).ToString();
 	}
 
     /// <summary>
