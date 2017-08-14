@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Callibrate : MonoBehaviour {
-    // the maximum that the user can lean in each direction
-    private float maxLeft, maxRight, maxFront, maxBack, width, height;
+    // the dimensions of the board displaying balance
+    private float width, height;
 
     [SerializeField]
     private Text instructions;
@@ -13,8 +13,11 @@ public class Callibrate : MonoBehaviour {
     [SerializeField]
     private GameObject marker;
 
-    // whether the 
-    private bool isFrontCal, isBackCal, isLeftCal, isRightCal;
+    private Vector3 initPosn;
+
+    private bool isDown, isStraightOut, isCrossedOut;
+
+    private Vector3 downPosn, outStraightPosn, outCrossedPosn;
 
     // Controller and access to controller input
     private SteamVR_TrackedObject ctrlr;
@@ -28,68 +31,62 @@ public class Callibrate : MonoBehaviour {
     // auto-attached in SteamVR prefab
     void Awake()
     {
-        ctrlr = GetComponent<SteamVR_TrackedObject>();
 
-        isFrontCal = false;
-        isBackCal = false;
-        isLeftCal = false;
-        isRightCal = false;
-        width = 400f;
-        height = 240f;
-    }
-	
-	// Update is called once per frame
-	void Update () {
+        initPosn = marker.transform.position;
+        SetInstructions("Put your hand at your side.");
+
         if (Wii.GetRemoteCount() == 0)
         {
             SetInstructions("Board not connected.");
             // Wii.StartSearch();
         }
+
+        ctrlr = GetComponent<SteamVR_TrackedObject>();
+
+        width = 400f;
+        height = 240f;
+
+        isDown = false;
+        isStraightOut = false;
+        isCrossedOut = false;
+    }
+	
+	// Update is called once per frame
+	void Update () {
+       
+        Vector2 pos = Wii.GetCenterOfBalance(0);
+
+        SetInstructions("");
+        ShowCenterOfBalance(pos);
+
+        if (!isDown)
+        {
+            if (Controller.GetHairTriggerDown())
+            {
+                downPosn = ctrlr.transform.position;
+                SetInstructions("Reach straight out.");
+            }
+        }
+        else if (!isStraightOut)
+        {
+            if (Controller.GetHairTriggerDown())
+            {
+                outStraightPosn = ctrlr.transform.position;
+                SetInstructions("Reach across your body.");
+            }
+        }
+        else if (!isCrossedOut)
+        {
+            if (Controller.GetHairTriggerDown())
+            {
+                downPosn = ctrlr.transform.position;
+                SetInstructions("");
+            }
+        }
         else
         {
-            Vector2 pos = Wii.GetCenterOfBalance(0);
-
-            if (!isFrontCal)
-            {
-                SetInstructions("Lean all the way forward and press the trigger");
-                if (Controller.GetHairTriggerDown())
-                {
-                    maxFront = pos.y;
-                    isFrontCal = true;
-                }
-            }
-            else if (!isBackCal)
-            {
-                SetInstructions("Lean all the way back and press the trigger.");
-                if (Controller.GetHairTriggerDown())
-                {
-                    maxBack = pos.y;
-                    isBackCal = true;
-                }
-            }
-            else if (!isLeftCal)
-            {
-                SetInstructions("Lean all the way to the left and press the trigger.");
-                if (Controller.GetHairTriggerDown())
-                {
-                    maxLeft = pos.x;
-                    isLeftCal = true;
-                }
-            }
-            else if (!isRightCal)
-            {
-                SetInstructions("Lean all the way to the right and press the trigger.");
-                if (Controller.GetHairTriggerDown())
-                {
-                    maxRight = pos.x;
-                    isRightCal = true;
-                }
-            }
-            else
-            {
-                SetInstructions("");
-                ShowCenterOfBalance(pos);
-            }
+            // do something here
+                                                                                                                                 
         }
     }
 
@@ -103,24 +100,9 @@ public class Callibrate : MonoBehaviour {
     {
         float pos_x, pos_y;
 
-        if (pos.x > 0)
-        {
-            pos_x = (pos.x / maxLeft) * width;
-        }
-        else
-        {
-            pos_x = - (pos.x / maxRight) * width;
-        }
+        pos_x = (pos.x) * width;
+        pos_y = (pos.y) * height;
 
-        if (pos.y > 0)
-        {
-            pos_y = (pos.y / maxFront) * height;
-        }
-        else
-        {
-            pos_y = - (pos.y / maxBack) * height;
-        }
-
-        marker.GetComponent<RectTransform>().anchoredPosition = new Vector3(pos_x, pos_y, -10);
+        marker.GetComponent<RectTransform>().anchoredPosition = new Vector3(initPosn.x + pos_x, initPosn.y + pos_y, initPosn.z);
     }
 }
