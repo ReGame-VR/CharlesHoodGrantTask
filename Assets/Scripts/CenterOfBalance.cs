@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class CenterOfBalance : MonoBehaviour {
 
-    private bool isHeld;
+    /// <summary>
+    /// isHeld - whether the user is within the position
+    /// straightOut - whether the user reaching straight has been calibrated
+    /// crossedOut - whether the user reaching cross out has been calibrated
+    /// back - whether the user reaching back has been calibrated
+    /// </summary>
+    private bool isHeld, straightOut, crossedOut, back;
 
     private Vector2 toHold, playerPosn;
 
@@ -22,14 +28,18 @@ public class CenterOfBalance : MonoBehaviour {
     void Start () {
         gizmoOffset = new Vector3(0f, 2.5f, 5f);
         toHold = new Vector2(0, 0);
+        isHeld = false;
+        straightOut = false;
+
 	}
 
+    /*
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
 
         // draw position
-        Gizmos.DrawCube( new Vector3(playerPosn.x * 10f +gizmoOffset.x, playerPosn.y * 10f + gizmoOffset.y, gizmoOffset.z), 
+        Gizmos.DrawCube( new Vector3(playerPosn.x * 9f +gizmoOffset.x, playerPosn.y * 4.5f + gizmoOffset.y, gizmoOffset.z), 
             new Vector3(0.1f, 0.1f, 0.1f) );
 
         // draw square around point where error margin is
@@ -48,15 +58,19 @@ public class CenterOfBalance : MonoBehaviour {
         // right vertical line
         Gizmos.DrawLine(new Vector3(toHold.x + errorMargin / 2 + gizmoOffset.x, toHold.y + errorMargin / 2 + gizmoOffset.y, gizmoOffset.z),
             new Vector3(toHold.x + errorMargin / 2 + gizmoOffset.x, toHold.y - errorMargin / 2 + gizmoOffset.y, gizmoOffset.z));
-    }
+    } */
 	
 	// Update is called once per frame
 	void Update () {
         playerPosn = Wii.GetCenterOfBalance(0);
 
-        if (!isHeld)
-        {
 
-        }
 	}
+
+    /// <summary>
+    /// If the user is way outside of the position, it will be red.
+    /// If the user is close, it will be yellow
+    /// If the useris inside, it will be green
+    /// </summary>
+    private enum posnIndicator { RED, YELLOW, GREEN };
 }
