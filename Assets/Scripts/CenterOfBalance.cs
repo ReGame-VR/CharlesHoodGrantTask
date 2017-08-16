@@ -63,14 +63,5 @@ public class CenterOfBalance : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         playerPosn = Wii.GetCenterOfBalance(0);
-
-
 	}
-
-    /// <summary>
-    /// If the user is way outside of the position, it will be red.
-    /// If the user is close, it will be yellow
-    /// If the useris inside, it will be green
-    /// </summary>
-    private enum posnIndicator { RED, YELLOW, GREEN };
 }
