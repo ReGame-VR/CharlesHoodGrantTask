@@ -3,31 +3,64 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Task : MonoBehaviour {
+
     [SerializeField]
-    private GameObject controller1, controller2;
+    private GameObject controller;
 
     private bool straightOutCal, crossedOutCal;
 
-    private Vector2 
+    private ControllerHandler ctrlr;
 
+    private Vector2 leftFarthestCOB, rightFarthestCOB;
+
+    private Vector3 leftFarthestHand, rightFarthestHand;
 
 	// Use this for initialization
 	void Start () {
         straightOutCal = false;
         crossedOutCal = false;
 
+        ctrlr = (ControllerHandler)controller.GetComponent(typeof(ControllerHandler));
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        Vector2 posn = Wii.GetCenterOfBalance(0);
+
 		if (!straightOutCal)
         {
+            if (ctrlr.isTriggerDown())
+            {
+                // grab c.o.b. and hand posn - assume right handed and switch if not later
+                rightFarthestHand = controller.transform.position;
+                rightFarthestCOB = posn;
+                straightOutCal = true;
 
+            }
         }
         else if (!crossedOutCal)
         {
-            // if key pressed
-            if 
+            if (ctrlr.isTriggerDown())
+            {
+                if (posn.x < 0)
+                {
+                    leftFarthestHand = controller.transform.position;
+                    leftFarthestCOB = posn;
+                    Debug.Log("Right handed.");
+                }
+                else
+                {
+                    leftFarthestHand = rightFarthestHand;
+                    leftFarthestCOB = rightFarthestCOB;
+
+                    rightFarthestHand = controller.transform.position;
+                    rightFarthestCOB = posn;
+                    Debug.Log("left handed");
+                }
+                crossedOutCal = true;
+            }
+
         }
         else
         {
