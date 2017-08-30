@@ -1,11 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Task : MonoBehaviour {
 
     [SerializeField]
     private GameObject controller;
+
+    [SerializeField]
+    private Image cob;
 
     private bool straightOutCal, crossedOutCal;
 
@@ -64,7 +68,7 @@ public class Task : MonoBehaviour {
         }
         else
         {
-
+            cob.transform.position = new Vector3(posn.x * 9f, posn.y * 4.5f , cob.transform.position.z);
         }
 	}
 

@@ -33,7 +33,7 @@ public class CenterOfBalance : MonoBehaviour {
 
 	}
 
-    /*
+    
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -58,7 +58,7 @@ public class CenterOfBalance : MonoBehaviour {
         // right vertical line
         Gizmos.DrawLine(new Vector3(toHold.x + errorMargin / 2 + gizmoOffset.x, toHold.y + errorMargin / 2 + gizmoOffset.y, gizmoOffset.z),
             new Vector3(toHold.x + errorMargin / 2 + gizmoOffset.x, toHold.y - errorMargin / 2 + gizmoOffset.y, gizmoOffset.z));
-    } */
+    }
 	
 	// Update is called once per frame
 	void Update () {
