@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Calibrate : MonoBehaviour {
 
@@ -62,5 +63,19 @@ public class Calibrate : MonoBehaviour {
         // vertical bars
         leftImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + leftMax * 4.5f, canvasOffset.y, canvasOffset.z);
         rightImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + rightMax * 4.5f, canvasOffset.y, canvasOffset.z);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SaveData();
+            SceneManager.LoadScene("Test");
+        }
+    }
+
+    public void SaveData()
+    {
+        GlobalControl.Instance.forwardCal = forwardMax;
+        GlobalControl.Instance.backwardsCal = backwardsMax;
+        GlobalControl.Instance.leftCal = leftMax;
+        GlobalControl.Instance.rightCal = rightMax;
     }
 }

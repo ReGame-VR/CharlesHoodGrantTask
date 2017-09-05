@@ -11,19 +11,11 @@ public class Task : MonoBehaviour {
     [SerializeField]
     private Image cob;
 
-    private bool straightOutCal, crossedOutCal;
 
     private ControllerHandler ctrlr;
 
-    private Vector2 leftFarthestCOB, rightFarthestCOB;
-
-    private Vector3 leftFarthestHand, rightFarthestHand;
-
 	// Use this for initialization
 	void Start () {
-        straightOutCal = false;
-        crossedOutCal = false;
-
         ctrlr = (ControllerHandler)controller.GetComponent(typeof(ControllerHandler));
 	}
 	
@@ -31,45 +23,6 @@ public class Task : MonoBehaviour {
 	void Update () {
 
         Vector2 posn = Wii.GetCenterOfBalance(0);
-
-		if (!straightOutCal)
-        {
-            if (ctrlr.isTriggerDown())
-            {
-                // grab c.o.b. and hand posn - assume right handed and switch if not later
-                rightFarthestHand = controller.transform.position;
-                rightFarthestCOB = posn;
-                straightOutCal = true;
-
-            }
-        }
-        else if (!crossedOutCal)
-        {
-            if (ctrlr.isTriggerDown())
-            {
-                if (posn.x < 0)
-                {
-                    leftFarthestHand = controller.transform.position;
-                    leftFarthestCOB = posn;
-                    Debug.Log("Right handed.");
-                }
-                else
-                {
-                    leftFarthestHand = rightFarthestHand;
-                    leftFarthestCOB = rightFarthestCOB;
-
-                    rightFarthestHand = controller.transform.position;
-                    rightFarthestCOB = posn;
-                    Debug.Log("left handed");
-                }
-                crossedOutCal = true;
-            }
-
-        }
-        else
-        {
-            cob.transform.position = new Vector3(posn.x * 9f, posn.y * 4.5f , cob.transform.position.z);
-        }
 	}
 
     /// <summary>
