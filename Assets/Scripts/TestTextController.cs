@@ -9,7 +9,10 @@ public class TestTextController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        text.text = "max front:\nmax back: \nmaxLeft: \nmaxRight: \n"; 
+        text.text = "max front:" + GlobalControl.Instance.forwardCal
+            + "\nmax back: " + GlobalControl.Instance.backwardsCal
+            + " \nmaxLeft: " + GlobalControl.Instance.leftCal
+            + " \nmaxRight: \n" + GlobalControl.Instance.rightCal; 
 	}
 	
 	// Update is called once per frame

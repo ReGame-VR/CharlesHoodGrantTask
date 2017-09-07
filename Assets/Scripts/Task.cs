@@ -5,6 +5,16 @@ using UnityEngine.UI;
 
 public class Task : MonoBehaviour {
 
+    /*
+        Atar = [XMinWeight/2, YMaxWeight - halfdim]; %Center coordinates of target A
+        Btar = [XMaxWeight - halfdim, YMaxWeight - halfdim]; %Center coordinates of target B
+        Ctar = [XMinWeight + halfdim, 0]; %Center coordinates of target C
+        Dtar = [2 + halfdim, 0]; %Center coordinates of target D
+        Etar = [0 - halfdim, YMinWeight + halfdim]; %Center coordinates of target E
+        Ftar = [(XMaxWeight - 2) - halfdim, YMinWeight + halfdim]; %Center coordinates of target 
+    */
+
+
     [SerializeField]
     private GameObject controller;
 
