@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+// using 
 
 public class TestTextController : MonoBehaviour {
 
@@ -9,10 +10,10 @@ public class TestTextController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        text.text = "max front:" + GlobalControl.Instance.forwardCal
-            + "\nmax back: " + GlobalControl.Instance.backwardsCal
-            + " \nmaxLeft: " + GlobalControl.Instance.leftCal
-            + " \nmaxRight: \n" + GlobalControl.Instance.rightCal; 
+        text.text = "max front:" + GlobalControl.Instance.forwardCal * 23.8 / 2
+            + " cm\nmax back: " + GlobalControl.Instance.backwardsCal * 23.8 / 2
+            + " cm\nmaxLeft: " + GlobalControl.Instance.leftCal * 43.3 / 2
+            + " cm\nmaxRight: \n" + GlobalControl.Instance.rightCal * 43.3 / 2 + " cm"; 
 	}
 	
 	// Update is called once per frame

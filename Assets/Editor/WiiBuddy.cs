@@ -103,7 +103,6 @@ public class WiiBuddy : Editor{
 					Wii.StopSearch ();
 				}
 			}
-
 			else
 			{
 				if (GUILayout.Button ("Find", GUILayout.MaxWidth (40)))
