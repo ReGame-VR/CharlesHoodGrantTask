@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using ReadWriteCSV;
 
 public class TestWriter : MonoBehaviour {
 
@@ -9,12 +10,18 @@ public class TestWriter : MonoBehaviour {
 
     private void WriteToFile()
     {
-        using (StreamWriter file = new StreamWriter(@"C:\Users\Rehabilitation Games\Desktop\CharlesHoodGrantTask\Assets\Data\test.txt"))
+        using (CsvFileWriter writer = new CsvFileWriter("Data/WriteTest.csv"))
         {
-            file.Write("Writing to file 2");
-            file.Close();
+            for (int i = 0; i < 100; i++)
+            {
+                CsvRow row = new CsvRow();
+                for (int j = 0; j < 5; j++)
+                    row.Add(string.Format("Column {0}", j));
+                writer.WriteRow(row);
+            }
         }
     }
+
 
 	void OnDisable()
     {
@@ -23,8 +30,7 @@ public class TestWriter : MonoBehaviour {
     
     // Use this for initialization
 	void Start () {
-        using (StreamWriter file = new StreamWriter(@"C:\Users\Rehabilitation Games\Desktop\CharlesHoodGrantTask\Assets\Data\test.txt"))
-        file.Write("Writing to file");
+
 	}
 	
 	// Update is called once per frame
