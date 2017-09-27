@@ -83,7 +83,7 @@ public class Calibrate : MonoBehaviour {
         }
 
         // only count hand measurement if it is in a reasonable range to hold out
-        if (handY > hmdY - 0.7f && handY < hmdY)
+        if (handY > hmdY - 0.5f && handY < hmdY)
         {
             // Debug.Log("Entered loop");
 
