@@ -9,5 +9,8 @@ EditorBuildSettings:
     path: Assets/_Scenes/Calibrate.unity
     guid: b1b69e190169f30468a85df6fff62e32
   - enabled: 1
-    path: Assets/_Scenes/Test.unity
+    path: Assets/_Scenes/Task.unity
+    guid: 3c3d29a0eba95214aa9d62d31d36cb64
+  - enabled: 0
+    path: 
     guid: fbca2b6872e539d48b21e2860490ae97

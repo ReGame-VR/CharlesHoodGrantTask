@@ -22,9 +22,9 @@ public class Task : MonoBehaviour {
 
     private Target[] targets = new Target[6];
 
-    public Text text;
+    // public Text text;
 
-    public GameObject cameraRig;
+    public GameObject head;
 
     public GameObject target;
 
@@ -44,6 +44,10 @@ public class Task : MonoBehaviour {
 
         weightShiftRange = YMaxWeight - YMinWeight;
 
+        float ratio = reachRange / weightShiftRange;
+
+        float halfRange = reachRange / 2;
+
         Vector2 a, b, c, d, e, f;
 
         // create the 2d positions for the targets on the balance board
@@ -56,24 +60,49 @@ public class Task : MonoBehaviour {
 
         // create the targets - 3d posns based on 2d posns 
         // A
-        targets[0] = new Target(new Vector3(0, 0, 0), a);
+        targets[0] = new Target(new Vector3(head.transform.position.x - 0.3f, 
+            head.transform.position.y, a.y * ratio + halfRange), a);
         // B
-        targets[1] = new Target(new Vector3(0, 0, 0), b);
+        targets[1] = new Target(new Vector3(head.transform.position.x + 0.3f, 
+            head.transform.position.y, b.y * ratio + halfRange), b);
         // C
-        targets[2] = new Target(new Vector3(0, 0, 0), c);
+        targets[2] = new Target(new Vector3(head.transform.position.x + 0.5f, 
+            head.transform.position.y - 0.17f, c.y * ratio + halfRange), c);
         // D
-        targets[3] = new Target(new Vector3(0, 0, 0), d);
+        targets[3] = new Target(new Vector3(head.transform.position.x - 0.5f, 
+            head.transform.position.y - 0.17f, d.y * ratio + halfRange), d);
         // E
-        targets[4] = new Target(new Vector3(0, 0, 0), e);
+        targets[4] = new Target(new Vector3(head.transform.position.x + 0.3f, 
+            head.transform.position.y - 0.34f, e.y * ratio + halfRange), e);
         // F
-        targets[5] = new Target(new Vector3(0, 0, 0), f);
-	}
+        targets[5] = new Target(new Vector3(head.transform.position.x - 0.3f,
+            head.transform.position.y - 0.34f, f.y * ratio + halfRange), f);
+
+        // for testing
+        GameObject t1, t2, t3, t4, t5, t6;
+
+        t1 = Instantiate(target) as GameObject;
+        t1.transform.position = targets[0].worldPosn;
+
+        t2 = Instantiate(target) as GameObject;
+        t2.transform.position = targets[1].worldPosn;
+
+        t3 = Instantiate(target) as GameObject;
+        t3.transform.position = targets[2].worldPosn;
+
+        t4 = Instantiate(target) as GameObject;
+        t4.transform.position = targets[3].worldPosn;
+
+        t5 = Instantiate(target) as GameObject;
+        t5.transform.position = targets[4].worldPosn;
+
+        t6 = Instantiate(target) as GameObject;
+        t6.transform.position = targets[5].worldPosn;
+    }
 	
 	// Update is called once per frame
 	void Update () {
         Vector2 posn = CoPtoCM(Wii.GetCenterOfBalance(0));
-
-        text.text = posn.ToString();
 	}
 
     private Vector2 CoPtoCM(Vector2 posn)

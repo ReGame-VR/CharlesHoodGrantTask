@@ -14,6 +14,14 @@ public class Calibrate : MonoBehaviour {
 
     public Image leftImg;
 
+    public Text forwardText;
+
+    public Text backwardText;
+
+    public Text rightText;
+
+    public Text leftText;
+
     public Image COB;
 
     public GameObject hmd;
@@ -64,6 +72,11 @@ public class Calibrate : MonoBehaviour {
         {
             backwardsMax = posn.y;
         }
+
+        forwardText.text = forwardMax.ToString();
+        backwardText.text = backwardsMax.ToString();
+        rightText.text = rightMax.ToString();
+        leftText.text = leftMax.ToString();
         
         // - - - - - REACH CALIBRATION - - - - -
         float hmdZ = hmd.transform.position.z;
@@ -90,7 +103,6 @@ public class Calibrate : MonoBehaviour {
             if (handZ > forwardReach || float.IsNaN(forwardReach) )
             {
                 forwardReach = handZ;
-                Debug.Log("Why");
             }
             else if (handZ < backwardsReach || float.IsNaN(backwardsReach))
             {
@@ -108,12 +120,18 @@ public class Calibrate : MonoBehaviour {
         leftImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + leftMax * 4.5f, canvasOffset.y, canvasOffset.z);
         rightImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + rightMax * 4.5f, canvasOffset.y, canvasOffset.z);
 
+        // text
+        forwardText.GetComponent<RectTransform>().position = forwardImg.GetComponent<RectTransform>().position;
+        backwardText.GetComponent<RectTransform>().position = backwardsImg.GetComponent<RectTransform>().position;
+        rightText.GetComponent<RectTransform>().position = rightImg.GetComponent<RectTransform>().position;
+        leftText.GetComponent<RectTransform>().position = leftImg.GetComponent<RectTransform>().position;
+
         text.text = "Back reach: " + backwardsReach + "\n Front reach: " + forwardReach;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             SaveData();
-            SceneManager.LoadScene("Test");
+            SceneManager.LoadScene("Task");
         }
     }
 
