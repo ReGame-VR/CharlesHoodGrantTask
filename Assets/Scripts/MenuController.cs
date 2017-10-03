@@ -6,8 +6,8 @@ using UnityEngine.VR;
 
 public class MenuController : MonoBehaviour {
 
-    // public Button wiiButton;
-    // public InputField participantID;
+    private bool isRotating;
+    private bool isSequence;
 
     public void ConnectWii()
     {
@@ -18,6 +18,16 @@ public class MenuController : MonoBehaviour {
     {
         Settings.Instance.participantID = arg0;
         Debug.Log(Settings.Instance.participantID);
+    }
+
+    public void SetRotation(bool rotating)
+    {
+        isRotating = rotating;
+    }
+
+    public void SetRandomize(bool sequence)
+    {
+        isSequence = sequence;
     }
 
 	// Use this for initialization
