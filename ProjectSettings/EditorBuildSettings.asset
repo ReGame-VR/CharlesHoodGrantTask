@@ -6,5 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/WiiBuddy/Demo Scene/Demo Scene.unity
+    guid: d5cf8fe94bb6f9d4a93d63eeb58b1090
+  - enabled: 1
     path: Assets/_Scenes/NEWCallibration.unity
     guid: 63f8c57d77e7cec4395841cf6adc3032
