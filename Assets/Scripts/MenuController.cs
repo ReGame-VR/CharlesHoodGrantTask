@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.VR;
+using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour {
 
-    private bool isRotating;
-    private bool isSequence;
+    private bool enteredID = false;
+
+    public Text warning;
 
     public void ConnectWii()
     {
@@ -17,28 +19,61 @@ public class MenuController : MonoBehaviour {
     public void RecordID(string arg0)
     {
         Settings.Instance.participantID = arg0;
-        Debug.Log(Settings.Instance.participantID);
+        enteredID = true;
+        // Debug.Log(Settings.Instance.participantID);
     }
 
     public void SetRotation(bool rotating)
     {
-        isRotating = rotating;
+        Settings.Instance.rotating = rotating;
     }
 
-    public void SetRandomize(bool sequence)
+    /*public void SetRandomize(bool sequence)
     {
         isSequence = sequence;
+    }*/
+
+    public void SetHand(int input)
+    {
+        switch (input)
+        {
+            case 0:
+                Settings.Instance.hand = Settings.Hand.RIGHT;
+                break;
+            case 1:
+                Settings.Instance.hand = Settings.Hand.LEFT;
+                break;
+        }
+    }
+
+    public void NextScene()
+    {
+        if (!enteredID || Wii.GetRemoteCount() == 0)
+        {
+            string errorMessage = "One or more errors in calibration:\n";
+
+            if (!enteredID)
+            {
+                errorMessage += "Participant ID not assigned.\n";
+            }
+            if (Wii.GetRemoteCount() == 0)
+            {
+                errorMessage += "Wii balance board not connected.";
+            }
+
+            warning.gameObject.SetActive(true);
+            warning.text = errorMessage;
+        }
+        else
+        {
+            SceneManager.LoadScene("NEWCallibration");
+        }
     }
 
 	// Use this for initialization
 	void Start () {
         // disable VR settings for menu scene
         VRSettings.enabled = false;
-
-        /* Button btn = wiiButton.GetComponent<Button>();
-        btn.onClick.AddListener(ConnectWii);
-        var se = new InputField.SubmitEvent();
-        se.AddListener(RecordID); 
-        */
+        warning.gameObject.SetActive(false);
 	}
 }

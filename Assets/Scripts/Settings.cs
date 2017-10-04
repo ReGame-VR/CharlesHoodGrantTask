@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Settings : MonoBehaviour {
 
-    public string participantID;
+    public string participantID = "default";
+    public Hand hand = Hand.RIGHT;
+    public bool rotating = true;
 
     public static Settings Instance;
 
@@ -20,4 +22,9 @@ public class Settings : MonoBehaviour {
             Destroy(gameObject);
         }
     }
+
+    public enum Hand
+    {
+        RIGHT, LEFT
+    };
 }
