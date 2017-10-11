@@ -20,7 +20,7 @@ public class DataHandler : MonoBehaviour {
 
         using (CsvFileWriter writer = new CsvFileWriter(@"Data/test.csv"))
         {
-            CsvRow header = CsvRow();
+            CsvRow header = new CsvRow();
             header.Add("Trial Number");
             header.Add("Time");
             header.Add("Target Number");
