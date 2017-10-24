@@ -141,7 +141,7 @@ public class Calibrate : MonoBehaviour {
         GlobalControl.Instance.backwardsCal = backwardsMax;
         GlobalControl.Instance.leftCal = leftMax;
         GlobalControl.Instance.rightCal = rightMax;
-        GlobalControl.Instance.backReach = backwardsReach;
-        GlobalControl.Instance.frontReach = forwardReach;
+        //GlobalControl.Instance.backReach = backwardsReach;
+        //GlobalControl.Instance.frontReach = forwardReach;
     }
 }

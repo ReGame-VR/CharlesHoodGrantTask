@@ -14,9 +14,9 @@ public class Task : MonoBehaviour {
 
     private float YMinWeight = GlobalControl.Instance.backwardsCal;
 
-    private float backReach = GlobalControl.Instance.backReach;
+    // private float backReach = GlobalControl.Instance.backReach;
 
-    private float frontReach = GlobalControl.Instance.frontReach;
+    // private float frontReach = GlobalControl.Instance.frontReach;
 
     private float dim, halfdim, devdim;
 
@@ -40,13 +40,15 @@ public class Task : MonoBehaviour {
 
         devdim = dim + 3;
 
-        reachRange = frontReach - backReach;
+        reachRange = GlobalControl.Instance.armLength;
 
         weightShiftRange = YMaxWeight - YMinWeight;
 
         float ratio = reachRange / weightShiftRange;
 
         float halfRange = reachRange / 2;
+
+        float height = head.transform.position.y;
 
         Vector2 a, b, c, d, e, f;
 
@@ -59,24 +61,12 @@ public class Task : MonoBehaviour {
         f = new Vector2((XMaxWeight - 2) - halfdim, YMinWeight + halfdim);
 
         // create the targets - 3d posns based on 2d posns 
-        // A
-        targets[0] = new Target(new Vector3(head.transform.position.x - 0.3f, 
-            head.transform.position.y, a.y * ratio + halfRange), a);
-        // B
-        targets[1] = new Target(new Vector3(head.transform.position.x + 0.3f, 
-            head.transform.position.y, b.y * ratio + halfRange), b);
-        // C
-        targets[2] = new Target(new Vector3(head.transform.position.x + 0.5f, 
-            head.transform.position.y - 0.17f, c.y * ratio + halfRange), c);
-        // D
-        targets[3] = new Target(new Vector3(head.transform.position.x - 0.5f, 
-            head.transform.position.y - 0.17f, d.y * ratio + halfRange), d);
-        // E
-        targets[4] = new Target(new Vector3(head.transform.position.x + 0.3f, 
-            head.transform.position.y - 0.34f, e.y * ratio + halfRange), e);
-        // F
-        targets[5] = new Target(new Vector3(head.transform.position.x - 0.3f,
-            head.transform.position.y - 0.34f, f.y * ratio + halfRange), f);
+        targets[0] = new Target(new Vector3(-0.3f, height / 3, 0), e);
+        targets[1] = new Target(new Vector3(-0.3f, height * 2/3, 0), c);
+        targets[2] = new Target(new Vector3(-0.3f, height, 0), a);
+        targets[3] = new Target(new Vector3(0.3f, height, 0), b);
+        targets[4] = new Target(new Vector3(0.3f, height * 2/3, 0), d);
+        targets[5] = new Target(new Vector3(0.3f, height / 3, 0), f);
 
         // for testing
         GameObject t1, t2, t3, t4, t5, t6;

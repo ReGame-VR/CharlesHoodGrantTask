@@ -22,4 +22,24 @@ public class Target {
     /// If the useris inside, it will be green
     /// </summary>
     public enum posnIndicator { RED, YELLOW, GREEN };
+
+    /// <summary>
+    /// Returns the score based on the 2D point IN RELATION TO THE CENTER OF THE TARGET
+    /// and the time it was hit. Must translate from Unity units (meters) to pixels due
+    /// to physical environment.
+    /// </summary>
+    /// <param name="point"></param>
+    /// <param name="currTime"></param>
+    /// <returns></returns>
+    public static float ScoreTouch(Vector2 point, float currTime)
+    {
+        float pixPerM = 6489.2f;
+
+        float speed = 10 - currTime;
+
+        float accuracy = (100 - Mathf.Abs(point.x * pixPerM - 500)/10 
+            + Mathf.Abs(point.y * pixPerM -500) / 10)*0.9f;
+
+        return speed + accuracy;
+    }
 }
