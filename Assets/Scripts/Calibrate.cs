@@ -32,9 +32,10 @@ public class Calibrate : MonoBehaviour {
 
     public Text text;
 
-    private float forwardMax, backwardsMax, rightMax, leftMax, forwardReach, backwardsReach;
+    private float forwardMax, backwardsMax, rightMax, leftMax, armLen;
 
     private Vector3 canvasOffset;
+
 
 	// Use this for initialization
 	void Start () {
@@ -43,8 +44,7 @@ public class Calibrate : MonoBehaviour {
         backwardsMax = 0f;
         rightMax = 0f;
         leftMax = 0f;
-        forwardReach = float.NaN;
-        backwardsReach = float.NaN;
+        armLen = float.NaN;
 	}
 	
 	// Update is called once per frame
@@ -96,19 +96,20 @@ public class Calibrate : MonoBehaviour {
         }
 
         // only count hand measurement if it is in a reasonable range to hold out
-        if (handY > hmdY - 0.5f && handY < hmdY)
+        if (Input.GetMouseButtonUp(0))
         {
-            // Debug.Log("Entered loop");
 
-            if (handZ > forwardReach || float.IsNaN(forwardReach) )
+            if (rightHand.activeInHierarchy)
             {
-                forwardReach = handZ;
+                armLen = rightHand.transform.position.z - hmd.transform.position.z;
             }
-            else if (handZ < backwardsReach || float.IsNaN(backwardsReach))
+            else
             {
-                backwardsReach = handZ;
+                armLen = leftHand.transform.position.z - hmd.transform.position.z;
             }
+            
         }
+        
 
         COB.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + posn.x * 4.5f, canvasOffset.y + posn.y * 2f, canvasOffset.z);
 
@@ -126,9 +127,10 @@ public class Calibrate : MonoBehaviour {
         rightText.GetComponent<RectTransform>().position = rightImg.GetComponent<RectTransform>().position;
         leftText.GetComponent<RectTransform>().position = leftImg.GetComponent<RectTransform>().position;
 
-        text.text = "Back reach: " + backwardsReach + "\n Front reach: " + forwardReach;
+        text.text = "Arm Length: " + armLen.ToString();
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        //  only go onto next scene if armLen has been calirated
+        if (Input.GetKeyDown(KeyCode.Space) && !float.IsNaN(armLen))
         {
             SaveData();
             SceneManager.LoadScene("Task");
@@ -141,6 +143,7 @@ public class Calibrate : MonoBehaviour {
         GlobalControl.Instance.backwardsCal = backwardsMax;
         GlobalControl.Instance.leftCal = leftMax;
         GlobalControl.Instance.rightCal = rightMax;
+        GlobalControl.Instance.armLength = armLen;
         //GlobalControl.Instance.backReach = backwardsReach;
         //GlobalControl.Instance.frontReach = forwardReach;
     }
