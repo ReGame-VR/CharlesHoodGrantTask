@@ -32,7 +32,7 @@ public class Calibrate : MonoBehaviour {
 
     public Text text;
 
-    private float forwardMax, backwardsMax, rightMax, leftMax, armLen;
+    private float forwardMax, backwardsMax, rightMax, leftMax, armLen, shoulderHeight;
 
     private Vector3 canvasOffset;
 
@@ -45,6 +45,7 @@ public class Calibrate : MonoBehaviour {
         rightMax = 0f;
         leftMax = 0f;
         armLen = float.NaN;
+        shoulderHeight = float.NaN;
 	}
 	
 	// Update is called once per frame
@@ -102,6 +103,7 @@ public class Calibrate : MonoBehaviour {
             if (rightHand.activeInHierarchy)
             {
                 armLen = rightHand.transform.position.z - hmd.transform.position.z;
+                shoulderHeight = rightHand.transform.position.y - hmd.transform.position.y;
             }
             else
             {
@@ -144,6 +146,7 @@ public class Calibrate : MonoBehaviour {
         GlobalControl.Instance.leftCal = leftMax;
         GlobalControl.Instance.rightCal = rightMax;
         GlobalControl.Instance.armLength = armLen;
+        GlobalControl.Instance.shoulderHeight = this.shoulderHeight;
         //GlobalControl.Instance.backReach = backwardsReach;
         //GlobalControl.Instance.frontReach = forwardReach;
     }

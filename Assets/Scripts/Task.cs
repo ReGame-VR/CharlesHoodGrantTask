@@ -14,6 +14,10 @@ public class Task : MonoBehaviour {
 
     private float YMinWeight = GlobalControl.Instance.backwardsCal;
 
+    private float reachRange = GlobalControl.Instance.armLength;
+
+    private float shoulderHeight = GlobalControl.Instance.shoulderHeight;
+
     // private float backReach = GlobalControl.Instance.backReach;
 
     // private float frontReach = GlobalControl.Instance.frontReach;
@@ -30,7 +34,7 @@ public class Task : MonoBehaviour {
 
     private ControllerHandler ctrlr;
 
-    private float reachRange, weightShiftRange;
+    private float weightShiftRange;
 
 	// Use this for initialization
 	void Start () {
@@ -39,8 +43,6 @@ public class Task : MonoBehaviour {
         halfdim = dim / 2;
 
         devdim = dim + 3;
-
-        reachRange = GlobalControl.Instance.armLength;
 
         weightShiftRange = YMaxWeight - YMinWeight;
 

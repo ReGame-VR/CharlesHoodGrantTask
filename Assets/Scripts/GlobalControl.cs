@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GlobalControl : MonoBehaviour {
-    public float forwardCal, backwardsCal, leftCal, rightCal/*, backReach, frontReach*/;
-
-    public float armLength = 0.8f;
+    public float forwardCal, backwardsCal, leftCal, rightCal, armLength, shoulderHeight/*, backReach, frontReach*/;
 
     public static GlobalControl Instance;
 
