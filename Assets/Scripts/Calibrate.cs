@@ -96,7 +96,7 @@ public class Calibrate : MonoBehaviour {
             handY = leftHand.transform.position.y;
         }
 
-        // only count hand measurement if it is in a reasonable range to hold out
+        // mouse button down to capture arm length and shoulder height
         if (Input.GetMouseButtonUp(0))
         {
 
@@ -108,8 +108,8 @@ public class Calibrate : MonoBehaviour {
             else
             {
                 armLen = leftHand.transform.position.z - hmd.transform.position.z;
+                shoulderHeight = leftHand.transform.position.y - hmd.transform.position.y;
             }
-            
         }
         
 
@@ -131,7 +131,7 @@ public class Calibrate : MonoBehaviour {
 
         text.text = "Arm Length: " + armLen.ToString();
 
-        //  only go onto next scene if armLen has been calirated
+        //  only go onto next scene if armLen has been calibrated
         if (Input.GetKeyDown(KeyCode.Space) && !float.IsNaN(armLen))
         {
             SaveData();

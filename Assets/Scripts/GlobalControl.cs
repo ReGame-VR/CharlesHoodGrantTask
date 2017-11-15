@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GlobalControl : MonoBehaviour {
-    public float forwardCal, backwardsCal, leftCal, rightCal, armLength, shoulderHeight/*, backReach, frontReach*/;
+    public float forwardCal, backwardsCal, leftCal, rightCal, armLength, shoulderHeight, maxLeftReach, maxRightReach/*, backReach, frontReach*/;
 
     public static GlobalControl Instance;
 
@@ -18,5 +18,24 @@ public class GlobalControl : MonoBehaviour {
         {
             Destroy(gameObject);
         }
+
+        ControllerHandler.NewMaxLeft += setMaxLeft;
+        ControllerHandler.NewMaxRight += setMaxRight;
+    }
+
+    void OnDisable()
+    {
+        ControllerHandler.NewMaxLeft -= setMaxLeft;
+        ControllerHandler.NewMaxRight -= setMaxRight;
+    }
+
+    private void setMaxLeft(float max)
+    {
+        maxLeftReach = max;
+    }
+
+    private void setMaxRight(float max)
+    {
+        maxRightReach = max;
     }
 }

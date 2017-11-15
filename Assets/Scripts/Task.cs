@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Task : MonoBehaviour {
 
@@ -14,9 +13,13 @@ public class Task : MonoBehaviour {
 
     private float YMinWeight = GlobalControl.Instance.backwardsCal;
 
-    private float reachRange = GlobalControl.Instance.armLength;
+    private float armLen = GlobalControl.Instance.armLength;
 
     private float shoulderHeight = GlobalControl.Instance.shoulderHeight;
+
+    private float maxReachRight = GlobalControl.Instance.maxRightReach;
+
+    private float maxReachLeft = GlobalControl.Instance.maxLeftReach;
 
     // private float backReach = GlobalControl.Instance.backReach;
 
@@ -28,6 +31,8 @@ public class Task : MonoBehaviour {
 
     // public Text text;
 
+    public GameObject cameraRig;
+
     public GameObject head;
 
     public GameObject target;
@@ -38,17 +43,15 @@ public class Task : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+        // calculate weightshitft as per PE and 2D VE
         dim = 6f;
 
         halfdim = dim / 2;
 
         devdim = dim + 3;
 
-        weightShiftRange = YMaxWeight - YMinWeight;
-
-        float ratio = reachRange / weightShiftRange;
-
-        float halfRange = reachRange / 2;
+        float halfRange = armLen / 2;
 
         float height = head.transform.position.y;
 
@@ -62,15 +65,27 @@ public class Task : MonoBehaviour {
         e = new Vector2(0 - halfdim, YMinWeight + halfdim);
         f = new Vector2((XMaxWeight - 2) - halfdim, YMinWeight + halfdim);
 
-        // create the targets - 3d posns based on 2d posns 
-        targets[0] = new Target(new Vector3(-0.3f, height / 3, 0), e);
-        targets[1] = new Target(new Vector3(-0.3f, height * 2/3, 0), c);
-        targets[2] = new Target(new Vector3(-0.3f, height, 0), a);
-        targets[3] = new Target(new Vector3(0.3f, height, 0), b);
-        targets[4] = new Target(new Vector3(0.3f, height * 2/3, 0), d);
-        targets[5] = new Target(new Vector3(0.3f, height / 3, 0), f);
+        float max, mid, min, xposLeft, xposRight, depth;
 
-        // for testing
+        max = (shoulderHeight + shoulderHeight * 0.4f) * 1.4f;
+        mid = shoulderHeight;
+        min = shoulderHeight - shoulderHeight * -0.4f;
+
+        xposLeft = maxReachLeft * 0.75f * 0.8f;
+
+        xposRight = maxReachRight * 0.75f * 0.8f;
+
+        depth = cameraRig.transform.position.z + armLen;
+
+        // create the targets, giving 2 positions, 1 3d for position of target in scene, 1 2d 
+        targets[0] = new Target(new Vector3(xposLeft*0.7f, min, depth), e);
+        targets[1] = new Target(new Vector3(xposLeft, mid, depth), c);
+        targets[2] = new Target(new Vector3(xposLeft, max, depth), a);
+        targets[3] = new Target(new Vector3(xposRight, max, depth), b);
+        targets[4] = new Target(new Vector3(xposRight, mid, depth), d);
+        targets[5] = new Target(new Vector3(xposRight*0.7f, min, depth), f);
+
+        // for testing -- real task, only need one
         GameObject t1, t2, t3, t4, t5, t6;
 
         t1 = Instantiate(target) as GameObject;

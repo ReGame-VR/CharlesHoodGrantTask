@@ -5,20 +5,40 @@ using UnityEngine.Events;
 
 public class ControllerHandler : MonoBehaviour {
 
-    private SteamVR_TrackedObject trackedObj;
+    public delegate void MaxLeft(float max);
+    public static MaxLeft NewMaxLeft;
 
-    private SteamVR_Controller.Device Controller
-    {
-        get { return SteamVR_Controller.Input((int)trackedObj.index); }
-    }
+    public delegate void MaxRight(float max);
+    public static MaxRight NewMaxRight;
+
+    private float leftMax, rightMax;
 
     void Awake()
     {
-        trackedObj = GetComponent<SteamVR_TrackedObject>();
+        leftMax = 0;
+        rightMax = 0;
     }
 
-    public bool isTriggerDown()
+    void Update()
     {
-        return Controller.GetHairTriggerDown();
+        Vector3 posn = gameObject.transform.position;
+
+        // side to side calibration
+        if (posn.x > rightMax)
+        {
+            rightMax = posn.x;
+            if (NewMaxRight != null)
+            {
+                NewMaxRight(rightMax);
+            }
+        }
+        else if (posn.x < leftMax)
+        {
+            leftMax = posn.x;
+            if (NewMaxLeft != null)
+            {
+                NewMaxLeft(rightMax);
+            }
+        }
     }
 }
