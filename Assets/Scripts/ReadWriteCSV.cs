@@ -1,15 +1,14 @@
-﻿/// <summary>
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+
+/// <summary>
 /// 
 /// Taken from Johnathan Wood's "Reading and Writing CSV Files in C#":
 /// https://www.codeproject.com/Articles/415732/Reading-and-Writing-CSV-Files-in-Csharp
 /// 
 /// </summary>
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-
 namespace ReadWriteCSV
 {
     /// <summary>

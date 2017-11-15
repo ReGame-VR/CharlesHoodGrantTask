@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// The main controller for the task.
+/// </summary>
 public class Task : MonoBehaviour {
 
     // TODO:: change to short or tall if not doing custom ranges
@@ -21,27 +24,24 @@ public class Task : MonoBehaviour {
 
     private float maxReachLeft = GlobalControl.Instance.maxLeftReach;
 
-    // private float backReach = GlobalControl.Instance.backReach;
-
-    // private float frontReach = GlobalControl.Instance.frontReach;
-
+    // parameters for weight shift accuracy
     private float dim, halfdim, devdim;
 
+    // A list of 6 targets (1 for each position A-F)
     private Target[] targets = new Target[6];
 
-    // public Text text;
-
+    // The camerarig prefab
     public GameObject cameraRig;
 
+    // The Camera (head) prefab of the camerarig
     public GameObject head;
 
+    // The target prefab
     public GameObject target;
 
-    private ControllerHandler ctrlr;
-
-    private float weightShiftRange;
-
-	// Use this for initialization
+	/// <summary>
+    /// Make calculations for 2D COB positions and 3D world positions based on calibration.
+    /// </summary>
 	void Start () {
 
         // calculate weightshitft as per PE and 2D VE
@@ -107,11 +107,18 @@ public class Task : MonoBehaviour {
         t6.transform.position = targets[5].worldPosn;
     }
 	
-	// Update is called once per frame
+	/// <summary>
+    /// 
+    /// </summary>
 	void Update () {
         Vector2 posn = CoPtoCM(Wii.GetCenterOfBalance(0));
 	}
 
+    /// <summary>
+    /// Converts COP ratio to be in terms of cm to match PE task.
+    /// </summary>
+    /// <param name="posn"></param> The current COB posn, not in terms of cm
+    /// <returns></returns> The posn, in terms of cm
     private Vector2 CoPtoCM(Vector2 posn)
     {
         return new Vector2(posn.x * 43.3f / 2f, posn.y * 23.6f / 2f);

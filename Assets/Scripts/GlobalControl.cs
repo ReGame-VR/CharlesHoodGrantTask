@@ -1,12 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Stores calibration data for trial use in a single place.
+/// </summary>
 public class GlobalControl : MonoBehaviour {
-    public float forwardCal, backwardsCal, leftCal, rightCal, armLength, shoulderHeight, maxLeftReach, maxRightReach/*, backReach, frontReach*/;
+    // The calibration data collected in the calibration scene and Calibrate.cs
+    public float forwardCal, backwardsCal, leftCal, rightCal, armLength, shoulderHeight, 
+        maxLeftReach, maxRightReach/*, backReach, frontReach*/;
 
+    // The single instance of this class
     public static GlobalControl Instance;
 
+    /// <summary>
+    /// Assign instance to this, or destroy it if Instance already exits and is not this instance.
+    /// </summary>
     void Awake()
     {
         if (Instance == null)
@@ -18,24 +25,5 @@ public class GlobalControl : MonoBehaviour {
         {
             Destroy(gameObject);
         }
-
-        ControllerHandler.NewMaxLeft += setMaxLeft;
-        ControllerHandler.NewMaxRight += setMaxRight;
-    }
-
-    void OnDisable()
-    {
-        ControllerHandler.NewMaxLeft -= setMaxLeft;
-        ControllerHandler.NewMaxRight -= setMaxRight;
-    }
-
-    private void setMaxLeft(float max)
-    {
-        maxLeftReach = max;
-    }
-
-    private void setMaxRight(float max)
-    {
-        maxRightReach = max;
     }
 }
