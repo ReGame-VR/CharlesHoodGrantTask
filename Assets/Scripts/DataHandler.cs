@@ -12,19 +12,17 @@ public class DataHandler : MonoBehaviour {
     List<Data> data = new List<Data>();
 
 	/// <summary>
-    /// 
+    /// Subscribe to data writing events.
     /// </summary>
 	void Awake () {
-		// TODO: Add listener for recording data
+        Task.OnRecordData += recordTrial;
 	}
 
     /// <summary>
-    /// 
+    /// Write all data to a file and unsubscribe from data writing event.
     /// </summary>
     void OnDisable()
     {
-        // TODO: remove listener for recording data
-
         // Write all entries in data list to file
         using (CsvFileWriter writer = new CsvFileWriter(@"Data/test.csv"))
         {
@@ -50,9 +48,30 @@ public class DataHandler : MonoBehaviour {
                 row.Add(d.time.ToString());
                 row.Add(d.targetNum.ToString());
                 row.Add(d.targetTime.ToString());
-                row.Add(d.weightShiftSuccess.ToString());
-                row.Add(d.buttonSuccess.ToString());
-                row.Add(d.isRandomSequence.ToString());
+                if (d.weightShiftSuccess)
+                {
+                    row.Add("YES");
+                }
+                else
+                {
+                    row.Add("NO");
+                }
+                if (d.buttonSuccess)
+                {
+                    row.Add("YES");
+                }
+                else
+                {
+                    row.Add("NO");
+                }
+                if (d.isRandomSequence)
+                {
+                    row.Add("YES");
+                }
+                else
+                {
+                    row.Add("NO");
+                }
                 row.Add(d.weightPosn.x.ToString());
                 row.Add(d.weightPosn.y.ToString());
                 row.Add(d.COPTotalPath.ToString());
@@ -61,6 +80,17 @@ public class DataHandler : MonoBehaviour {
                 row.Add(d.cumulativeScore.ToString());
             }
         }
+
+        Task.OnRecordData -= recordTrial;
+    }
+
+    private void recordTrial(int trialNum, float time, int targetNum, float targetTime,
+            bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
+            Vector2 weightPosn, float COPTotalPath, int targetScore, int trialScore,
+            int cumulativeScore)
+    {
+        data.Add(new Data(trialNum, time, targetNum, targetTime, weightShiftSuccess, buttonSuccess,
+            isRandomSequence, weightPosn, COPTotalPath, targetScore, trialScore, cumulativeScore));
     }
 	
     /// <summary>
@@ -87,18 +117,18 @@ public class DataHandler : MonoBehaviour {
         /// <summary>
         /// Constructs an instance of the Data class.
         /// </summary>
-        /// <param name="trialNum"></param> The trial #
-        /// <param name="time"></param> ???
-        /// <param name="targetNum"></param> the index of the target, ONE INDEXED
-        /// <param name="targetTime"></param> time to activate target or 10 if not activated
-        /// <param name="weightShiftSuccess"></param> did they successfully weight shift to correct location
-        /// <param name="buttonSuccess"></param> did they activate the target while in the correct location?
-        /// <param name="isRandomSequence"></param> is the target a random selection or a set sequence
-        /// <param name="weightPosn"></param> the 2D posn of COB when target activated OR when time up
-        /// <param name="COPTotalPath"></param> the distance in CM that the COB shifted during the target
-        /// <param name="targetScore"></param> the score earned just from this target
-        /// <param name="trialScore"></param> the score earned just in this trial (set of 5 targets)
-        /// <param name="cumulativeScore"></param> the total score so far at the time data is submitted
+        /// <param name="trialNum"> The trial number </param>
+        /// <param name="time"> Ask D. Levac for clarification </param>
+        /// <param name="targetNum"> the index of the target, ONE INDEXED </param>
+        /// <param name="targetTime"> ime to activate target or 10 if not activated </param>
+        /// <param name="weightShiftSuccess"> did they successfully weight shift to correct location </param>
+        /// <param name="buttonSuccess"> did they activate the target while in the correct location? </param>
+        /// <param name="isRandomSequence"> is the target a random selection or a set sequence </param>
+        /// <param name="weightPosn"> the 2D posn of COB when target activated OR when time up </param>
+        /// <param name="COPTotalPath"> the distance in CM that the COB shifted during the target </param>
+        /// <param name="targetScore"> the score earned just from this target </param>
+        /// <param name="trialScore"> the score earned just in this trial (set of 5 targets) </param>
+        /// <param name="cumulativeScore"> the total score so far at the time data is submitted </param>
         public Data(int trialNum, float time, int targetNum, float targetTime, 
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence, 
             Vector2 weightPosn, float COPTotalPath, int targetScore, int trialScore,

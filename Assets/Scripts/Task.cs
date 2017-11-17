@@ -6,6 +6,13 @@ using UnityEngine;
 /// The main controller for the task.
 /// </summary>
 public class Task : MonoBehaviour {
+    // Event + Delegate for data recording
+    public delegate void DataRecording(int trialNum, float time, int targetNum, float targetTime,
+            bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
+            Vector2 weightPosn, float COPTotalPath, int targetScore, int trialScore,
+            int cumulativeScore);
+
+    public static DataRecording OnRecordData;
 
     // TODO:: change to short or tall if not doing custom ranges
     private float XMaxWeight = GlobalControl.Instance.rightCal;
@@ -38,6 +45,55 @@ public class Task : MonoBehaviour {
 
     // The target prefab
     public GameObject target;
+
+    // The left controller (to be replaced with glove)
+    public GameObject leftController;
+
+    // The right controller (to be replaced with glove)
+    public GameObject rightController;
+
+    // time per trial
+    private const float timePerTarget = 10f;
+
+    // current time of current target
+    private float curTime = 0f;
+    
+    // targets per trial
+    private const int targetsPerTrial = 5;
+
+    // current target in trial block
+    private int curTarget = 1;
+
+    // number of trials
+    private const int numTrials = 10;
+
+    // current trial number
+    private int curTrial = 1;
+
+    // score per target
+    private float targetScore = 0;
+
+    // score per trial
+    private float trialScore = 0;
+
+    // cumulative score 
+    private float cumulativeScore;
+
+    // the target order when a trial is a sequnce trial
+    private int[] sequence = new int[5] { 3, 0, 2, 4, 1 };
+
+    // for recording COB distance per target
+    private Vector2 lastPosn;
+    private float COBdistance = 0;
+
+    // current target index
+    private int targetIndex;
+
+    // is the trial random or the set sequence?
+    private bool isSequence;
+
+    // Random
+    System.Random rand = new System.Random();
 
 	/// <summary>
     /// Make calculations for 2D COB positions and 3D world positions based on calibration.
@@ -105,22 +161,144 @@ public class Task : MonoBehaviour {
 
         t6 = Instantiate(target) as GameObject;
         t6.transform.position = targets[5].worldPosn;
+
+        // get starting posn
+        lastPosn = CoPtoCM(Wii.GetCenterOfBalance(0));
     }
 	
 	/// <summary>
-    /// 
+    /// Run trials.
     /// </summary>
 	void Update () {
-        Vector2 posn = CoPtoCM(Wii.GetCenterOfBalance(0));
-	}
+        // are the trials still running?
+        if (curTrial <= numTrials) {
+            // tick up clock
+            curTime += Time.deltaTime;
+
+            // get position
+            Vector2 posn = CoPtoCM(Wii.GetCenterOfBalance(0));
+            calculateDistances(posn);
+
+            if (curTime < timePerTarget)
+            {
+                // TODO: Check for correct COP, and allow touch if in correct position
+            }
+            else
+            {
+                ResetTarget();
+            }
+        }
+        else
+        {
+            // TODO: handle endgame
+        }
+    }
 
     /// <summary>
     /// Converts COP ratio to be in terms of cm to match PE task.
     /// </summary>
-    /// <param name="posn"></param> The current COB posn, not in terms of cm
-    /// <returns></returns> The posn, in terms of cm
+    /// <param name="posn"> The current COB posn, not in terms of cm </param>
+    /// <returns> The posn, in terms of cm </returns>
     private Vector2 CoPtoCM(Vector2 posn)
     {
         return new Vector2(posn.x * 43.3f / 2f, posn.y * 23.6f / 2f);
+    }
+
+    /// <summary>
+    /// Calculate distance moved since last frame and add it to COB distance.
+    /// </summary>
+    /// <param name="posn">The current COB position</param>
+    private void calculateDistances(Vector2 posn)
+    {
+        COBdistance += Mathf.Sqrt(Mathf.Pow(posn.x - lastPosn.x, 2) 
+            + Mathf.Pow(posn.y - lastPosn.y, 2));
+
+        lastPosn = posn;
+    }
+
+    /// <summary>
+    /// Whether target was touched or time is up, reset time values, distance, and advance to next
+    /// trial.
+    /// </summary>
+    private void ResetTarget()
+    {
+        if (OnRecordData != null)
+        {
+            //OnRecordData();
+        }
+
+        curTime = 0;
+        targetScore = 0;
+        COBdistance = 0;
+
+        if (curTarget < targetsPerTrial) {
+            curTarget++;
+            if (isSequence)
+            {
+                targetIndex = sequence[curTarget];
+            }
+            else
+            {
+                targetIndex = rand.Next(6);
+            }
+        }
+
+        else
+        {
+            ResetTrial();
+        }
+    }
+
+    /// <summary>
+    /// After the specified number of targets per trial is up, reset trial parameters and move onto
+    /// the next trial.
+    /// </summary>
+    private void ResetTrial()
+    {
+        curTarget = 1;
+        trialScore = 0;
+        chooseTrialType();
+
+        curTrial++;
+    }
+
+    /// <summary>
+    /// Choose whether the set of 5 targets will be random or sequence.
+    /// </summary>
+    private void chooseTrialType()
+    {
+        int r = rand.Next(2);
+
+        isSequence = (r == 1);
+    }
+
+    /// <summary>
+    /// Checks the user's position against the target's assigned activation position, and makes
+    /// any appropriate color changes.
+    /// </summary>
+    /// <param name="userPosn"> the user's position on the Wii board. </param>
+    private void checkPosn(Vector2 userPosn)
+    {
+        // indicator is green, user can touch target
+        if ((userPosn.x <= targets[targetIndex].CoPTarget.x + halfdim) 
+            && (userPosn.x >= targets[targetIndex].CoPTarget.x - halfdim)
+            && (userPosn.y <= targets[targetIndex].CoPTarget.y + halfdim)
+            && (userPosn.y >= targets[targetIndex].CoPTarget.y + halfdim))
+        {
+
+        }
+        // indicator is yellow
+        else if ((userPosn.x <= targets[targetIndex].CoPTarget.x + devdim)
+            && (userPosn.x >= targets[targetIndex].CoPTarget.x - devdim)
+            && (userPosn.y <= targets[targetIndex].CoPTarget.y + devdim)
+            && (userPosn.y >= targets[targetIndex].CoPTarget.y + devdim))
+        {
+
+        }
+        // indicator is red
+        else
+        {
+
+        }
     }
 }

@@ -8,7 +8,11 @@ public class Target {
     public posnIndicator indication;
     public readonly Vector3 worldPosn;
     public readonly Vector2 CoPTarget;
-
+    /// <summary>
+    /// Constructs a Target
+    /// </summary>
+    /// <param name="worldPosn"> The 3D position in the virtual environment </param>
+    /// <param name="CoPTarget"> The 2D center for the center of pressure box to activate the target </param>
     public Target(Vector3 worldPosn, Vector2 CoPTarget)
     {
         this.indication = posnIndicator.RED;
@@ -28,8 +32,8 @@ public class Target {
     /// and the time it was hit. Must translate from Unity units (meters) to pixels due
     /// to physical environment.
     /// </summary>
-    /// <param name="point"></param>
-    /// <param name="currTime"></param>
+    /// <param name="point"> the point the user touched the target</param>
+    /// <param name="currTime"> The time in the trial that the target was touched</param>
     /// <returns></returns>
     public static float ScoreTouch(Vector2 point, float currTime)
     {
