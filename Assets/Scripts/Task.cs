@@ -9,8 +9,8 @@ public class Task : MonoBehaviour {
     // Event + Delegate for data recording
     public delegate void DataRecording(int trialNum, float time, int targetNum, float targetTime,
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
-            Vector2 weightPosn, float COPTotalPath, int targetScore, int trialScore,
-            int cumulativeScore);
+            Vector2 weightPosn, float COPTotalPath, float targetScore, float trialScore,
+            float cumulativeScore);
 
     public static DataRecording OnRecordData;
 
@@ -92,6 +92,13 @@ public class Task : MonoBehaviour {
     // is the trial random or the set sequence?
     private bool isSequence;
 
+    // data recording trials
+    // what is this?
+    private float time = 0f;
+
+    // was the target touched?
+    private bool touched = false;
+
     // Random
     System.Random rand = new System.Random();
 
@@ -170,6 +177,8 @@ public class Task : MonoBehaviour {
     /// Run trials.
     /// </summary>
 	void Update () {
+        time += Time.deltaTime;
+
         // are the trials still running?
         if (curTrial <= numTrials) {
             // tick up clock
@@ -177,15 +186,19 @@ public class Task : MonoBehaviour {
 
             // get position
             Vector2 posn = CoPtoCM(Wii.GetCenterOfBalance(0));
+
             calculateDistances(posn);
 
             if (curTime < timePerTarget)
             {
-                // TODO: Check for correct COP, and allow touch if in correct position
+                if (targets[targetIndex].indication == Target.posnIndicator.GREEN)
+                {
+                    // TODO: since target is green, is user touching target?
+                }
             }
             else
             {
-                ResetTarget();
+                ResetTarget(posn);
             }
         }
         else
@@ -220,16 +233,21 @@ public class Task : MonoBehaviour {
     /// Whether target was touched or time is up, reset time values, distance, and advance to next
     /// trial.
     /// </summary>
-    private void ResetTarget()
+    /// <param name="posn"> The current COB posn IN TERMS OF CM</param>
+    private void ResetTarget(Vector2 posn)
     {
         if (OnRecordData != null)
         {
-            //OnRecordData();
+            // note: convert target index to a one-indexed value for data recording
+            OnRecordData(curTrial, time, targetIndex + 1, curTime,
+                (targets[targetIndex].indication == Target.posnIndicator.GREEN), touched, isSequence,
+                posn, COBdistance, targetScore, trialScore, cumulativeScore);
         }
 
         curTime = 0;
         targetScore = 0;
         COBdistance = 0;
+        touched = false;
 
         if (curTarget < targetsPerTrial) {
             curTarget++;
@@ -283,22 +301,22 @@ public class Task : MonoBehaviour {
         if ((userPosn.x <= targets[targetIndex].CoPTarget.x + halfdim) 
             && (userPosn.x >= targets[targetIndex].CoPTarget.x - halfdim)
             && (userPosn.y <= targets[targetIndex].CoPTarget.y + halfdim)
-            && (userPosn.y >= targets[targetIndex].CoPTarget.y + halfdim))
+            && (userPosn.y >= targets[targetIndex].CoPTarget.y - halfdim))
         {
-
+            targets[targetIndex].isGreen();
         }
         // indicator is yellow
         else if ((userPosn.x <= targets[targetIndex].CoPTarget.x + devdim)
             && (userPosn.x >= targets[targetIndex].CoPTarget.x - devdim)
             && (userPosn.y <= targets[targetIndex].CoPTarget.y + devdim)
-            && (userPosn.y >= targets[targetIndex].CoPTarget.y + devdim))
+            && (userPosn.y >= targets[targetIndex].CoPTarget.y - devdim))
         {
-
+            targets[targetIndex].isYellow();
         }
         // indicator is red
         else
         {
-
+            targets[targetIndex].isRed();
         }
     }
 }

@@ -84,10 +84,27 @@ public class DataHandler : MonoBehaviour {
         Task.OnRecordData -= recordTrial;
     }
 
+    /// <summary>
+    /// Creates a new instance of the data class to store information to write to the data file 
+    /// at the end of the session. It is called when the trial over event fires.
+    /// </summary>
+    /// <param name="trialNum"> Which trial number this is </param>
+    /// <param name="time"> ??? </param>
+    /// <param name="targetNum"> the index of the target - one indexed for recording purposes</param>
+    /// <param name="targetTime"> Time it took to weight shift and touch target, or 10 seconds
+    ///                           if target was not successfully touched </param>
+    /// <param name="weightShiftSuccess"> did the user have weight shift success? </param>
+    /// <param name="buttonSuccess"> did the user successfully touch the target? </param>
+    /// <param name="isRandomSequence"> true if the trial is the set sequence, not random </param>
+    /// <param name="weightPosn"> the user's COB position at the end of the trial </param>
+    /// <param name="COPTotalPath"> the total distance, in cm, that the user's COB traveled </param>
+    /// <param name="targetScore"> score earned for this target only </param>
+    /// <param name="trialScore"> score earned for this trial so far </param>
+    /// <param name="cumulativeScore"> overall score earned so far </param>
     private void recordTrial(int trialNum, float time, int targetNum, float targetTime,
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
-            Vector2 weightPosn, float COPTotalPath, int targetScore, int trialScore,
-            int cumulativeScore)
+            Vector2 weightPosn, float COPTotalPath, float targetScore, float trialScore,
+            float cumulativeScore)
     {
         data.Add(new Data(trialNum, time, targetNum, targetTime, weightShiftSuccess, buttonSuccess,
             isRandomSequence, weightPosn, COPTotalPath, targetScore, trialScore, cumulativeScore));
@@ -110,9 +127,9 @@ public class DataHandler : MonoBehaviour {
         public readonly Vector2 weightPosn; // weight posn on balance board 
                                             // - when target hit OR when time runs out
         public readonly float COPTotalPath; // The total distance the user's COB traveled during the task
-        public readonly int targetScore; // the combined accuracy + timeliness score for a single trial
-        public readonly int trialScore; // the trial score, so far (a set of 5 target positions)
-        public readonly int cumulativeScore; // The total score for the session
+        public readonly float targetScore; // the combined accuracy + timeliness score for a single trial
+        public readonly float trialScore; // the trial score, so far (a set of 5 target positions)
+        public readonly float cumulativeScore; // The total score for the session
 
         /// <summary>
         /// Constructs an instance of the Data class.
@@ -131,8 +148,8 @@ public class DataHandler : MonoBehaviour {
         /// <param name="cumulativeScore"> the total score so far at the time data is submitted </param>
         public Data(int trialNum, float time, int targetNum, float targetTime, 
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence, 
-            Vector2 weightPosn, float COPTotalPath, int targetScore, int trialScore,
-            int cumulativeScore)
+            Vector2 weightPosn, float COPTotalPath, float targetScore, float trialScore,
+            float cumulativeScore)
         {
             this.trialNum = trialNum;
             this.time = time;

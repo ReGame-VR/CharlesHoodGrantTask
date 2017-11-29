@@ -4,10 +4,19 @@
 /// A class to represent each of 6 targets - each target has a position, target center of pressure,
 /// and a color that indicates how close the user is to the center of pressure
 /// </summary>
-public class Target {
+public class Target : MonoBehaviour {
+    public Material greenMat;
+
+    public Material yellowMat;
+
+    public Material redMat;
+
     public posnIndicator indication;
     public readonly Vector3 worldPosn;
     public readonly Vector2 CoPTarget;
+
+    private Renderer r;
+
     /// <summary>
     /// Constructs a Target
     /// </summary>
@@ -18,6 +27,8 @@ public class Target {
         this.indication = posnIndicator.RED;
         this.worldPosn = worldPosn;
         this.CoPTarget = CoPTarget;
+
+        r = gameObject.GetComponent<Renderer>();
     }
 
     /// <summary>
@@ -45,5 +56,23 @@ public class Target {
             + Mathf.Abs(point.y * pixPerM -500) / 10)*0.9f;
 
         return speed + accuracy;
+    }
+
+    public void isGreen()
+    {
+        r.material = greenMat;
+        this.indication = posnIndicator.GREEN;
+    }
+
+    public void isYellow()
+    {
+        r.material = yellowMat;
+        this.indication = posnIndicator.YELLOW;
+    }
+
+    public void isRed()
+    {
+        r.material = redMat;
+        this.indication = posnIndicator.RED;
     }
 }
