@@ -73,7 +73,7 @@ public class MenuController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         // disable VR settings for menu scene
-        VRSettings.enabled = false;
+        UnityEngine.XR.XRSettings.enabled = false;
         warning.gameObject.SetActive(false);
 	}
 }

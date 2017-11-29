@@ -7,6 +7,6 @@ public class MenuToTask : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        VRSettings.enabled = true;
+        UnityEngine.XR.XRSettings.enabled = true;
     }
 }
