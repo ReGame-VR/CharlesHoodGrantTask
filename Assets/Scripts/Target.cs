@@ -28,7 +28,7 @@ public class Target : MonoBehaviour {
         this.worldPosn = worldPosn;
         this.CoPTarget = CoPTarget;
 
-        r = gameObject.GetComponent<Renderer>();
+        // r = gameObject.GetComponent<Renderer>();
     }
 
     /// <summary>

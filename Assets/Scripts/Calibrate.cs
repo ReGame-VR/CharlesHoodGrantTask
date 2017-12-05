@@ -128,13 +128,13 @@ public class Calibrate : MonoBehaviour {
 
             if (rightHand.activeInHierarchy)
             {
-                armLen = rightHand.transform.position.z - hmd.transform.position.z;
-                shoulderHeight = rightHand.transform.position.y - hmd.transform.position.y;
+                armLen = Mathf.Abs(rightHand.transform.position.z - hmd.transform.position.z);
+                shoulderHeight = rightHand.transform.position.y;
             }
             else
             {
-                armLen = leftHand.transform.position.z - hmd.transform.position.z;
-                shoulderHeight = leftHand.transform.position.y - hmd.transform.position.y;
+                armLen = Mathf.Abs(leftHand.transform.position.z - hmd.transform.position.z);
+                shoulderHeight = leftHand.transform.position.y;
             }
         }
         
@@ -161,12 +161,14 @@ public class Calibrate : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space) && !float.IsNaN(armLen))
         {
             SaveData(); // Save data to GameControl
+
+            Debug.Log(GlobalControl.Instance.armLength);
             SceneManager.LoadScene("Task");
         }
     }
 
     /// <summary>
-    /// Save data to the singleton GameControl class. 
+    /// Save data to the singleton GlobalControl class. 
     /// </summary>
     public void SaveData()
     {

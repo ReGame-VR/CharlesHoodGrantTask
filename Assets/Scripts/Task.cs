@@ -31,6 +31,9 @@ public class Task : MonoBehaviour {
 
     private float maxReachLeft = GlobalControl.Instance.maxLeftReach;
 
+    // offset between middle and top/bottom in the physical environment
+    private float midTargetOffset = 0.14f;
+
     // parameters for weight shift accuracy
     private float dim, halfdim, devdim;
 
@@ -79,7 +82,7 @@ public class Task : MonoBehaviour {
     // cumulative score 
     private float cumulativeScore;
 
-    // the target order when a trial is a sequnce trial
+    // the target order when a trial is a sequnce trial - same as 2D PE, but 0 indexed
     private int[] sequence = new int[5] { 3, 0, 2, 4, 1 };
 
     // for recording COB distance per target
@@ -99,8 +102,8 @@ public class Task : MonoBehaviour {
     // was the target touched?
     private bool touched = false;
 
-    // Random
-    System.Random rand = new System.Random();
+    // for random number generation
+    private System.Random rand = new System.Random();
 
 	/// <summary>
     /// Make calculations for 2D COB positions and 3D world positions based on calibration.
@@ -128,25 +131,26 @@ public class Task : MonoBehaviour {
         e = new Vector2(0 - halfdim, YMinWeight + halfdim);
         f = new Vector2((XMaxWeight - 2) - halfdim, YMinWeight + halfdim);
 
+        // calculations for 3D posns
         float max, mid, min, xposLeft, xposRight, depth;
 
-        max = (shoulderHeight + shoulderHeight * 0.4f) * 1.4f;
+        max = shoulderHeight * 1.2f;
         mid = shoulderHeight;
-        min = shoulderHeight - shoulderHeight * -0.4f;
+        min = shoulderHeight *0.8f;
 
-        xposLeft = maxReachLeft * 0.75f * 0.8f;
+        xposLeft = maxReachLeft * 0.8f + midTargetOffset;
 
-        xposRight = maxReachRight * 0.75f * 0.8f;
+        xposRight = maxReachRight * 0.8f - midTargetOffset;
 
-        depth = cameraRig.transform.position.z + armLen;
+        depth = cameraRig.transform.position.z + armLen * 0.8f;
 
         // create the targets, giving 2 positions, 1 3d for position of target in scene, 1 2d 
-        targets[0] = new Target(new Vector3(xposLeft*0.7f, min, depth), e);
-        targets[1] = new Target(new Vector3(xposLeft, mid, depth), c);
+        targets[0] = new Target(new Vector3(xposLeft, min, depth), e);
+        targets[1] = new Target(new Vector3(xposLeft - midTargetOffset, mid, depth), c);
         targets[2] = new Target(new Vector3(xposLeft, max, depth), a);
         targets[3] = new Target(new Vector3(xposRight, max, depth), b);
-        targets[4] = new Target(new Vector3(xposRight, mid, depth), d);
-        targets[5] = new Target(new Vector3(xposRight*0.7f, min, depth), f);
+        targets[4] = new Target(new Vector3(xposRight + midTargetOffset, mid, depth), d);
+        targets[5] = new Target(new Vector3(xposRight, min, depth), f);
 
         // for testing -- real task, only need one
         GameObject t1, t2, t3, t4, t5, t6;
@@ -180,7 +184,7 @@ public class Task : MonoBehaviour {
         time += Time.deltaTime;
 
         // are the trials still running?
-        if (curTrial <= numTrials) {
+        /*if (curTrial <= numTrials) {
             // tick up clock
             curTime += Time.deltaTime;
 
@@ -204,7 +208,7 @@ public class Task : MonoBehaviour {
         else
         {
             // TODO: handle endgame
-        }
+        }*/
     }
 
     /// <summary>
@@ -249,6 +253,7 @@ public class Task : MonoBehaviour {
         COBdistance = 0;
         touched = false;
 
+        // either select next target in 
         if (curTarget < targetsPerTrial) {
             curTarget++;
             if (isSequence)
@@ -277,11 +282,20 @@ public class Task : MonoBehaviour {
         trialScore = 0;
         chooseTrialType();
 
+        if (isSequence)
+        {
+            targetIndex = sequence[curTarget];
+        }
+        else
+        {
+            targetIndex = rand.Next(6);
+        }
+
         curTrial++;
     }
 
     /// <summary>
-    /// Choose whether the set of 5 targets will be random or sequence.
+    /// Choose whether the set of 5 targets will be random or sequence (50% chance of each).
     /// </summary>
     private void chooseTrialType()
     {
