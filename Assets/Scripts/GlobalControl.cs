@@ -8,6 +8,9 @@ public class GlobalControl : MonoBehaviour {
     public float forwardCal, backwardsCal, leftCal, rightCal, armLength, shoulderHeight, 
         maxLeftReach, maxRightReach/*, backReach, frontReach*/;
 
+    // todo: set this in menu
+    public bool isRotation = true;
+
     // The single instance of this class
     public static GlobalControl Instance;
 

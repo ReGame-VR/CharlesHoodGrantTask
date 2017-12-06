@@ -134,9 +134,9 @@ public class Task : MonoBehaviour {
         // calculations for 3D posns
         float max, mid, min, xposLeft, xposRight, depth;
 
-        max = shoulderHeight * 1.2f;
+        max = shoulderHeight * 1.3f;
         mid = shoulderHeight;
-        min = shoulderHeight *0.8f;
+        min = shoulderHeight * 0.7f;
 
         xposLeft = maxReachLeft * 0.8f + midTargetOffset;
 
