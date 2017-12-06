@@ -18,33 +18,16 @@ public class MenuController : MonoBehaviour {
 
     public void RecordID(string arg0)
     {
-        Settings.Instance.participantID = arg0;
+        GlobalControl.Instance.participantID = arg0;
         enteredID = true;
         // Debug.Log(Settings.Instance.participantID);
     }
 
     public void SetRotation(bool rotating)
     {
-        Settings.Instance.rotating = rotating;
+        GlobalControl.Instance.isRotation = rotating;
     }
 
-    /*public void SetRandomize(bool sequence)
-    {
-        isSequence = sequence;
-    }*/
-
-    public void SetHand(int input)
-    {
-        switch (input)
-        {
-            case 0:
-                Settings.Instance.hand = Settings.Hand.RIGHT;
-                break;
-            case 1:
-                Settings.Instance.hand = Settings.Hand.LEFT;
-                break;
-        }
-    }
 
     public void NextScene()
     {
@@ -66,7 +49,7 @@ public class MenuController : MonoBehaviour {
         }
         else
         {
-            SceneManager.LoadScene("NEWCallibration");
+            SceneManager.LoadScene("Calibrate");
         }
     }
 

@@ -8,8 +8,10 @@ public class GlobalControl : MonoBehaviour {
     public float forwardCal, backwardsCal, leftCal, rightCal, armLength, shoulderHeight, 
         maxLeftReach, maxRightReach/*, backReach, frontReach*/;
 
-    // todo: set this in menu
+    // if this is true, the targets are rotating
     public bool isRotation = true;
+
+    public string participantID;
 
     // The single instance of this class
     public static GlobalControl Instance;
