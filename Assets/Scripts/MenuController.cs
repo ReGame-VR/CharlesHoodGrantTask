@@ -58,6 +58,7 @@ public class MenuController : MonoBehaviour {
         // disable VR settings for menu scene
         UnityEngine.XR.XRSettings.enabled = false;
         warning.gameObject.SetActive(false);
+        Debug.Log(Wii.GetRemoteCount());
 	}
 
     void OnDisable()
