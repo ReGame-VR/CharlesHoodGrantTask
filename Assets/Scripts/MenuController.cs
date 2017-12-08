@@ -11,6 +11,8 @@ public class MenuController : MonoBehaviour {
 
     public Text warning;
 
+    public Text isWiiConnected;
+
     public void ConnectWii()
     {
         Wii.StartSearch();
@@ -60,6 +62,18 @@ public class MenuController : MonoBehaviour {
         warning.gameObject.SetActive(false);
         Debug.Log(Wii.GetRemoteCount());
 	}
+
+    void Update()
+    {
+        if (Wii.GetRemoteCount() == 0)
+        {
+            isWiiConnected.text = "Wii not connected.";
+        }
+        else
+        {
+            isWiiConnected.text = "Wii connected.";
+        }
+    }
 
     void OnDisable()
     {
