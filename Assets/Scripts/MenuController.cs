@@ -59,4 +59,9 @@ public class MenuController : MonoBehaviour {
         UnityEngine.XR.XRSettings.enabled = false;
         warning.gameObject.SetActive(false);
 	}
+
+    void OnDisable()
+    {
+        UnityEngine.XR.XRSettings.enabled = true;
+    }
 }

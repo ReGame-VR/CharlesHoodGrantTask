@@ -162,7 +162,6 @@ public class Calibrate : MonoBehaviour {
         {
             SaveData(); // Save data to GameControl
 
-            Debug.Log(GlobalControl.Instance.armLength);
             SceneManager.LoadScene("Task");
         }
     }

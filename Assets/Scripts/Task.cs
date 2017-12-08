@@ -34,6 +34,9 @@ public class Task : MonoBehaviour {
     // offset between middle and top/bottom in the physical environment
     private float midTargetOffset = 0.14f;
 
+    // the radius of rotation - from center screw to center of target
+    private float radius = 0.1025f; 
+
     // parameters for weight shift accuracy
     private float dim, halfdim, devdim;
 
@@ -48,6 +51,9 @@ public class Task : MonoBehaviour {
 
     // The target prefab
     public GameObject target;
+
+    // the rotation prefab
+    public GameObject rotationObj;
 
     // The left controller (to be replaced with glove)
     public GameObject leftController;
@@ -68,7 +74,7 @@ public class Task : MonoBehaviour {
     private int curTarget = 1;
 
     // number of trials
-    private const int numTrials = 10;
+    private const int numTrials = 5;
 
     // current trial number
     private int curTrial = 1;
@@ -104,6 +110,9 @@ public class Task : MonoBehaviour {
 
     // for random number generation
     private System.Random rand = new System.Random();
+
+    // gameobject "holder" for target instance
+    private GameObject _gameObject;
 
 	/// <summary>
     /// Make calculations for 2D COB positions and 3D world positions based on calibration.
@@ -144,7 +153,7 @@ public class Task : MonoBehaviour {
 
         depth = cameraRig.transform.position.z + armLen * 0.8f;
 
-        // create the targets, giving 2 positions, 1 3d for position of target in scene, 1 2d 
+        // create the targets
         targets[0] = new Target(new Vector3(xposLeft, min, depth), e);
         targets[1] = new Target(new Vector3(xposLeft - midTargetOffset, mid, depth), c);
         targets[2] = new Target(new Vector3(xposLeft, max, depth), a);
@@ -152,26 +161,10 @@ public class Task : MonoBehaviour {
         targets[4] = new Target(new Vector3(xposRight + midTargetOffset, mid, depth), d);
         targets[5] = new Target(new Vector3(xposRight, min, depth), f);
 
-        // for testing -- real task, only need one
-        GameObject t1, t2, t3, t4, t5, t6;
 
-        t1 = Instantiate(target) as GameObject;
-        t1.transform.position = targets[0].worldPosn;
-
-        t2 = Instantiate(target) as GameObject;
-        t2.transform.position = targets[1].worldPosn;
-
-        t3 = Instantiate(target) as GameObject;
-        t3.transform.position = targets[2].worldPosn;
-
-        t4 = Instantiate(target) as GameObject;
-        t4.transform.position = targets[3].worldPosn;
-
-        t5 = Instantiate(target) as GameObject;
-        t5.transform.position = targets[4].worldPosn;
-
-        t6 = Instantiate(target) as GameObject;
-        t6.transform.position = targets[5].worldPosn;
+        chooseTrialType();
+        chooseNextTarget();
+        placeTarget();
 
         // get starting posn
         lastPosn = CoPtoCM(Wii.GetCenterOfBalance(0));
@@ -183,32 +176,25 @@ public class Task : MonoBehaviour {
 	void Update () {
         time += Time.deltaTime;
 
-        // are the trials still running?
-        /*if (curTrial <= numTrials) {
-            // tick up clock
-            curTime += Time.deltaTime;
+        // tick up clock
+        curTime += Time.deltaTime;
 
-            // get position
-            Vector2 posn = CoPtoCM(Wii.GetCenterOfBalance(0));
+        // get position
+        Vector2 posn = CoPtoCM(Wii.GetCenterOfBalance(0));
 
-            calculateDistances(posn);
+        calculateDistances(posn);
 
-            if (curTime < timePerTarget)
+        if (curTime < timePerTarget)
+        {
+            if (targets[targetIndex].indication == Target.posnIndicator.GREEN)
             {
-                if (targets[targetIndex].indication == Target.posnIndicator.GREEN)
-                {
-                    // TODO: since target is green, is user touching target?
-                }
-            }
-            else
-            {
-                ResetTarget(posn);
+                // TODO: since target is green, is user touching target?
             }
         }
         else
         {
-            // TODO: handle endgame
-        }*/
+            ResetTarget(posn);
+        }
     }
 
     /// <summary>
@@ -256,19 +242,17 @@ public class Task : MonoBehaviour {
         // either select next target in 
         if (curTarget < targetsPerTrial) {
             curTarget++;
-            if (isSequence)
-            {
-                targetIndex = sequence[curTarget];
-            }
-            else
-            {
-                targetIndex = rand.Next(6);
-            }
+            chooseNextTarget();
+            placeTarget();
         }
-
-        else
+        else if (curTrial < numTrials)
         {
             ResetTrial();
+        }
+        // task is over
+        else
+        {
+            // TODO: HANDLE ENDGAME
         }
     }
 
@@ -279,9 +263,47 @@ public class Task : MonoBehaviour {
     private void ResetTrial()
     {
         curTarget = 1;
+        curTrial++;
         trialScore = 0;
-        chooseTrialType();
 
+        chooseTrialType();
+        chooseNextTarget();
+        placeTarget();
+    }
+
+    /// <summary>
+    /// Move either just the target or the gameobject with the rotation script and target to the
+    /// stored location based on the current target index.
+    /// </summary>
+    private void placeTarget()
+    {
+        if (GlobalControl.Instance.isRotation)
+        {
+            _gameObject = Instantiate(rotationObj) as GameObject;
+            _gameObject.transform.position = targets[targetIndex].worldPosn;
+        }
+        else
+        {
+            Vector3 offset = -new Vector3(radius, 0, 0);
+
+            _gameObject = Instantiate(target) as GameObject;
+            if (targetIndex < 3)
+            {
+                _gameObject.transform.position = targets[targetIndex].worldPosn - offset;
+            }
+            else
+            {
+                _gameObject.transform.position = targets[targetIndex].worldPosn + offset;
+            }
+
+        }
+    }
+
+    /// <summary>
+    /// Choose the next target randomly, or the next target in the sequence. 
+    /// </summary>
+    private void chooseNextTarget()
+    {
         if (isSequence)
         {
             targetIndex = sequence[curTarget];
@@ -290,8 +312,6 @@ public class Task : MonoBehaviour {
         {
             targetIndex = rand.Next(6);
         }
-
-        curTrial++;
     }
 
     /// <summary>
