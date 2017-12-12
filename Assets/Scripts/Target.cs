@@ -5,17 +5,16 @@
 /// and a color that indicates how close the user is to the center of pressure
 /// </summary>
 public class Target {
-    public Material greenMat;
-
-    public Material yellowMat;
-
-    public Material redMat;
-
     public posnIndicator indication;
     public readonly Vector3 worldPosn;
     public readonly Vector2 CoPTarget;
 
-    private Renderer r;
+    /// <summary>
+    /// If the user is way outside of the position, it will be red.
+    /// If the user is close, it will be yellow
+    /// If the useris inside, it will be green
+    /// </summary>
+    public enum posnIndicator { RED, YELLOW, GREEN };
 
     /// <summary>
     /// Constructs a Target
@@ -30,13 +29,6 @@ public class Target {
 
         // r = gameObject.GetComponent<Renderer>();
     }
-
-    /// <summary>
-    /// If the user is way outside of the position, it will be red.
-    /// If the user is close, it will be yellow
-    /// If the useris inside, it will be green
-    /// </summary>
-    public enum posnIndicator { RED, YELLOW, GREEN };
 
     /// <summary>
     /// Returns the score based on the 2D point IN RELATION TO THE CENTER OF THE TARGET

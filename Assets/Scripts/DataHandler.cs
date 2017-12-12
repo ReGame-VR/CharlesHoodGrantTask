@@ -26,6 +26,7 @@ public class DataHandler : MonoBehaviour {
         // Write all entries in data list to file
         using (CsvFileWriter writer = new CsvFileWriter(@"Data/test.csv"))
         {
+            // write header
             CsvRow header = new CsvRow();
             header.Add("Trial Number");
             header.Add("Time");
@@ -40,6 +41,7 @@ public class DataHandler : MonoBehaviour {
             header.Add("Trial Score");
             header.Add("Cumulative Score");
 
+            // write each line of data
             foreach (Data d in data)
             {
                 CsvRow row = new CsvRow();

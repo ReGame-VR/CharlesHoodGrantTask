@@ -218,7 +218,7 @@ public class Task : MonoBehaviour {
     /// </summary>
     /// <param name="posn"> The current COB posn, not in terms of cm </param>
     /// <returns> The posn, in terms of cm </returns>
-    private Vector2 CoPtoCM(Vector2 posn)
+    public static Vector2 CoPtoCM(Vector2 posn)
     {
         return new Vector2(posn.x * 43.3f / 2f, posn.y * 23.6f / 2f);
     }

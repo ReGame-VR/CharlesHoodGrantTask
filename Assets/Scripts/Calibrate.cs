@@ -7,14 +7,14 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Handles monitering and recording calibration values for the calibration scene. 
 /// Currently records the following values:
-///  - forward COB maximum
-///  - backwards COB maximum
-///  - right COB maximum
-///  - left COB maximum
+///  - forward center of balance maximum
+///  - backward center of balance maximum
+///  - right center of balance maximum
+///  - left center of balance maximum
 ///  - arm length
 ///  - shoulder height
-///  - left reach max
-///  - right reach max
+///  - left reach maximum
+///  - right reach maximum
 /// </summary>
 public class Calibrate : MonoBehaviour {
 
@@ -23,6 +23,7 @@ public class Calibrate : MonoBehaviour {
     public Image backwardsImg;
     public Image rightImg;
     public Image leftImg;
+    public Image COB;
 
     // UI Text for calibration GUI
     public Text forwardText;
@@ -30,17 +31,13 @@ public class Calibrate : MonoBehaviour {
     public Text rightText;
     public Text leftText;
 
-    // UI image displaying user's current COB
-    public Image COB;
-
     // the head mounted display - Camera (head) in [CameraRig] prefab
     public GameObject hmd;
 
-    // Controller (left) and Controller(right) - give both, 1 will be active
+    // Controller (left) and Controller(right) - give both, but only 1 will be active
+    // TODO: Replace with Manus Gloves
     public GameObject rightHand;
     public GameObject leftHand;
-
-    // public Text text;
 
     // Calibration values
     private float forwardMax, backwardsMax, rightMax, leftMax, armLen, shoulderHeight, 
@@ -50,7 +47,8 @@ public class Calibrate : MonoBehaviour {
     private Vector3 canvasOffset;
 
 	/// <summary>
-    /// Initialize calibration values to zero.
+    /// Initialize calibration values to zero, assigning NaN to arm length and shoulder height until
+    /// they are recorded with a mouse press. 
     /// </summary>
 	void Start () {
         canvasOffset = COB.GetComponent<RectTransform>().position;
@@ -72,7 +70,7 @@ public class Calibrate : MonoBehaviour {
 	void Update () {
 
         // - - - - - COB CALIBRATION - - - - -
-        Vector2 posn = Wii.GetCenterOfBalance(0);
+        Vector2 posn = Task.CoPtoCM(Wii.GetCenterOfBalance(0));
 
         if (posn.x > rightMax)
         {
@@ -139,15 +137,15 @@ public class Calibrate : MonoBehaviour {
         }
         
         // Handle any changes to GUI
-        COB.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + posn.x * 4.5f, canvasOffset.y + posn.y * 2f, canvasOffset.z);
+        COB.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + posn.x * 0.2f, canvasOffset.y + posn.y * 0.2f, canvasOffset.z);
 
         // horizontal bars
-        forwardImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x, canvasOffset.y + forwardMax * 2f, canvasOffset.z);
-        backwardsImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x, canvasOffset.y + backwardsMax * 2f, canvasOffset.z);
+        forwardImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x, canvasOffset.y + forwardMax * 0.2f, canvasOffset.z);
+        backwardsImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x, canvasOffset.y + backwardsMax * 0.2f, canvasOffset.z);
 
         // vertical bars
-        leftImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + leftMax * 4.5f, canvasOffset.y, canvasOffset.z);
-        rightImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + rightMax * 4.5f, canvasOffset.y, canvasOffset.z);
+        leftImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + leftMax * 0.2f, canvasOffset.y, canvasOffset.z);
+        rightImg.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + rightMax * 0.2f, canvasOffset.y, canvasOffset.z);
 
         // text
         forwardText.GetComponent<RectTransform>().position = forwardImg.GetComponent<RectTransform>().position;
@@ -167,7 +165,7 @@ public class Calibrate : MonoBehaviour {
     }
 
     /// <summary>
-    /// Save data to the singleton GlobalControl class. 
+    /// Save calibration data to GlobalControl. 
     /// </summary>
     public void SaveData()
     {
