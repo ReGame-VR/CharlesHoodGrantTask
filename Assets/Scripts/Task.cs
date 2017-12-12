@@ -40,7 +40,7 @@ public class Task : MonoBehaviour {
     // parameters for weight shift accuracy
     private float dim, halfdim, devdim;
 
-    // A list of 6 targets (1 for each position A-F)
+    // A list of 6 targets (1 for each position A-F) - positions generated in Start()
     private Target[] targets = new Target[6];
 
     // The camerarig prefab
@@ -55,11 +55,18 @@ public class Task : MonoBehaviour {
     // the rotation prefab
     public GameObject rotationObj;
 
-    // The left controller (to be replaced with glove)
+    // The left controller 
+    //TODO: replace with glove
     public GameObject leftController;
 
-    // The right controller (to be replaced with glove)
+    // The right controller
+    //TODO: replace with glove
     public GameObject rightController;
+
+    // the 3 materials for the target
+    public Material redMat;
+    public Material yellowMat;
+    public Material greenMat;
 
     // time per trial
     private const float timePerTarget = 10f;
@@ -114,6 +121,9 @@ public class Task : MonoBehaviour {
     // gameobject "holder" for target instance
     private GameObject _gameObject;
 
+    // for assigning the correct material
+    private Renderer rend;
+
 	/// <summary>
     /// Make calculations for 2D COB positions and 3D world positions based on calibration.
     /// </summary>
@@ -162,6 +172,8 @@ public class Task : MonoBehaviour {
         targets[5] = new Target(new Vector3(xposRight, min, depth), f);
 
 
+        rend = target.GetComponent<Renderer>();
+
         chooseTrialType();
         chooseNextTarget();
         placeTarget();
@@ -182,13 +194,17 @@ public class Task : MonoBehaviour {
         // get position
         Vector2 posn = CoPtoCM(Wii.GetCenterOfBalance(0));
 
+        // for data recording total distance of weight shift per target
         calculateDistances(posn);
+
+        //
+        checkPosn(posn);
 
         if (curTime < timePerTarget)
         {
             if (targets[targetIndex].indication == Target.posnIndicator.GREEN)
             {
-                // TODO: since target is green, is user touching target?
+                // TODO: implement collision with accuracy
             }
         }
         else
@@ -337,7 +353,7 @@ public class Task : MonoBehaviour {
             && (userPosn.y <= targets[targetIndex].CoPTarget.y + halfdim)
             && (userPosn.y >= targets[targetIndex].CoPTarget.y - halfdim))
         {
-            targets[targetIndex].isGreen();
+            setColor(Target.posnIndicator.GREEN);
         }
         // indicator is yellow
         else if ((userPosn.x <= targets[targetIndex].CoPTarget.x + devdim)
@@ -345,12 +361,35 @@ public class Task : MonoBehaviour {
             && (userPosn.y <= targets[targetIndex].CoPTarget.y + devdim)
             && (userPosn.y >= targets[targetIndex].CoPTarget.y - devdim))
         {
-            targets[targetIndex].isYellow();
+            setColor(Target.posnIndicator.YELLOW);
         }
         // indicator is red
         else
         {
-            targets[targetIndex].isRed();
+            setColor(Target.posnIndicator.RED);
+        }
+    }
+
+    /// <summary>
+    /// Sets the appropriate target's indication to the given color, and assigns the appropriate
+    /// material to the target GameObject.
+    /// </summary>
+    /// <param name="indication">The color that the target should be.</param>
+    private void setColor(Target.posnIndicator indication)
+    {
+        targets[targetIndex].indication = indication;
+
+        switch (indication)
+        {
+            case Target.posnIndicator.GREEN:
+                rend.material = greenMat;
+                break;
+            case Target.posnIndicator.YELLOW:
+                rend.material = yellowMat;
+                break;
+            default:
+                rend.material = redMat;
+                break;
         }
     }
 }

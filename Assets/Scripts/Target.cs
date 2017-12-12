@@ -4,7 +4,7 @@
 /// A class to represent each of 6 targets - each target has a position, target center of pressure,
 /// and a color that indicates how close the user is to the center of pressure
 /// </summary>
-public class Target : MonoBehaviour {
+public class Target {
     public Material greenMat;
 
     public Material yellowMat;
@@ -56,23 +56,5 @@ public class Target : MonoBehaviour {
             + Mathf.Abs(point.y * pixPerM -500) / 10)*0.9f;
 
         return speed + accuracy;
-    }
-
-    public void isGreen()
-    {
-        r.material = greenMat;
-        this.indication = posnIndicator.GREEN;
-    }
-
-    public void isYellow()
-    {
-        r.material = yellowMat;
-        this.indication = posnIndicator.YELLOW;
-    }
-
-    public void isRed()
-    {
-        r.material = redMat;
-        this.indication = posnIndicator.RED;
     }
 }
