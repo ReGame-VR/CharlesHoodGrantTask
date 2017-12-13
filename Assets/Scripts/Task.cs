@@ -322,7 +322,7 @@ public class Task : MonoBehaviour {
     {
         if (isSequence)
         {
-            targetIndex = sequence[curTarget];
+            targetIndex = sequence[curTarget - 1];
         }
         else
         {
