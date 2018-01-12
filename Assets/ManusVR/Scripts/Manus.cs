@@ -52,6 +52,7 @@ namespace ManusVR
         GLOVE_RIGHT
     }
 
+    [Serializable]
     public struct quat_t
     {
         public double x, y, z, w;
@@ -94,7 +95,7 @@ namespace ManusVR
         }
 #endif
     }
-
+    [Serializable]
     /*! Pose structure representing an orientation and position. */
     public struct pose_t
     {
@@ -112,13 +113,14 @@ namespace ManusVR
         }
 #endif
     }
-
+    [Serializable]
     public struct finger_t
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
         public pose_t[] joints;
     }
 
+    [Serializable]
     public struct manus_hand_raw_t
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
@@ -127,6 +129,7 @@ namespace ManusVR
         public double[] finger_sensor;
     }
 
+    [Serializable]
     public struct manus_hand_t
     {
         public manus_hand_raw_t raw;

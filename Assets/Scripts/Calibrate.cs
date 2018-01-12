@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
-/// Handles monitering and recording calibration values for the calibration scene. 
+/// Handles monitoring and recording calibration values for the calibration scene. 
 /// Currently records the following values:
 ///  - forward center of balance maximum
 ///  - backward center of balance maximum
@@ -120,20 +120,10 @@ public class Calibrate : MonoBehaviour {
         rightText.text = rightMax.ToString();
         leftText.text = leftMax.ToString();
 
-        // mouse button down to capture arm length and shoulder height
         if (Input.GetMouseButtonUp(0))
         {
+            this.CaptureArmLengthShoulderHeight();
 
-            if (rightHand.activeInHierarchy)
-            {
-                armLen = Mathf.Abs(rightHand.transform.position.z - hmd.transform.position.z);
-                shoulderHeight = rightHand.transform.position.y;
-            }
-            else
-            {
-                armLen = Mathf.Abs(leftHand.transform.position.z - hmd.transform.position.z);
-                shoulderHeight = leftHand.transform.position.y;
-            }
         }
         
         // Handle any changes to GUI
@@ -152,8 +142,6 @@ public class Calibrate : MonoBehaviour {
         backwardText.GetComponent<RectTransform>().position = backwardsImg.GetComponent<RectTransform>().position;
         rightText.GetComponent<RectTransform>().position = rightImg.GetComponent<RectTransform>().position;
         leftText.GetComponent<RectTransform>().position = leftImg.GetComponent<RectTransform>().position;
-
-        // text.text = "Arm Length: " + armLen.ToString();
 
         // Press space to load scene -- only go onto next scene if armLen has been calibrated
         if (Input.GetKeyDown(KeyCode.Space) && !float.IsNaN(armLen))
@@ -177,5 +165,23 @@ public class Calibrate : MonoBehaviour {
         GlobalControl.Instance.shoulderHeight = this.shoulderHeight;
         GlobalControl.Instance.maxLeftReach = this.leftReach;
         GlobalControl.Instance.maxRightReach = this.rightReach;
+    }
+
+    // Capture the arm length and shoulder height for calibration. Called using hair 
+    // trigger on Vive or mouse up.
+    public void CaptureArmLengthShoulderHeight()
+    {
+        if (rightHand.activeInHierarchy)
+        {
+            armLen = Mathf.Abs(rightHand.transform.position.z - hmd.transform.position.z);
+            shoulderHeight = rightHand.transform.position.y;
+        }
+        else
+        {
+            armLen = Mathf.Abs(leftHand.transform.position.z - hmd.transform.position.z);
+            shoulderHeight = leftHand.transform.position.y;
+        }
+        Debug.Log("Arm Length: " + armLen.ToString());
+
     }
 }

@@ -161,6 +161,7 @@ public class Task : MonoBehaviour {
 
         xposRight = maxReachRight * 0.8f - midTargetOffset;
 
+        //TODO Figure out why depth is so small 
         depth = cameraRig.transform.position.z + armLen * 0.8f;
 
         // create the targets

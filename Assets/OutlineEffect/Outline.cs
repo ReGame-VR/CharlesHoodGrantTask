@@ -28,6 +28,7 @@ using System.Collections.Generic;
 
 namespace cakeslice
 {
+    [ExecuteInEditMode]
     [RequireComponent(typeof(Renderer))]
     public class Outline : MonoBehaviour
     {
@@ -46,9 +47,14 @@ namespace cakeslice
             Renderer = GetComponent<Renderer>();
         }
 
+        private void Start()
+        {
+            if (!eraseRenderer)
+                enabled = false;
+        }
+
         void OnEnable()
         {
-
 			IEnumerable<OutlineEffect> effects = Camera.allCameras.AsEnumerable()
 				.Select(c => c.GetComponent<OutlineEffect>())
 				.Where(e => e != null);
@@ -57,12 +63,10 @@ namespace cakeslice
             {
                 effect.AddOutline(this);
             }
-
         }
 
         void OnDisable()
         {
-
 			IEnumerable<OutlineEffect> effects = Camera.allCameras.AsEnumerable()
 				.Select(c => c.GetComponent<OutlineEffect>())
 				.Where(e => e != null);
@@ -71,7 +75,6 @@ namespace cakeslice
             {
                 effect.RemoveOutline(this);
             }
-
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using Valve.VR;
 
 namespace ManusVR
@@ -42,13 +44,6 @@ namespace ManusVR
         private TrackedDevice[] devices;
 
         SteamVR_Events.Action newPosesAction;
-
-        // Manus Custom vars
-        public Vector3 leftRotOffset = new Vector3(0, 0, 0);
-        public Vector3 rightRotOffset = new Vector3(0, 0, 0);
-
-        public Vector3 leftPosOffset = new Vector3(0, 0, 0);
-        public Vector3 rightPosOffset = new Vector3(0, 0, 0);
 
         public KeyCode switchArmsButton = KeyCode.None;
 
@@ -99,7 +94,11 @@ namespace ManusVR
             newPosesAction.enabled = false;
 
             for (int i = 0; i < devices.Length; i++)
-                devices[i].isValid = false;
+            {
+                if (devices[i] != null)
+                    devices[i].isValid = false;
+            }
+                
         }
 
         // Update is called once per frame
@@ -127,7 +126,6 @@ namespace ManusVR
                     continue;
 
                 int intIndex = (int) devices[deviceNum].index;
-                ERole role = (ERole) deviceNum;
                 devices[deviceNum].isValid = false;
 
                 if (poses.Length <= intIndex)
@@ -151,8 +149,8 @@ namespace ManusVR
                 var pose = new SteamVR_Utils.RigidTransform(poses[intIndex].mDeviceToAbsoluteTracking);
 
                 // make sure the offset is localized
-                trackerTransforms[deviceNum].localPosition = pose.pos + pose.rot * (role == ERole.LeftHand ? leftPosOffset : rightPosOffset);
-                trackerTransforms[deviceNum].localRotation = pose.rot * Quaternion.Euler(role == ERole.LeftHand ? leftRotOffset : rightRotOffset);
+                trackerTransforms[deviceNum].localPosition = pose.pos;
+                trackerTransforms[deviceNum].localRotation = pose.rot;
             }
         }
     
@@ -171,7 +169,13 @@ namespace ManusVR
             for (uint i = 0; i < (uint) EIndex.Limit; i++)
             {
                 ETrackedPropertyError error = new ETrackedPropertyError();
-                ETrackedDeviceClass type = (ETrackedDeviceClass) OpenVR.System.GetInt32TrackedDeviceProperty(i, ETrackedDeviceProperty.Prop_DeviceClass_Int32, ref error);
+                ETrackedDeviceClass type;
+                if (OpenVR.System != null)
+                    type = (ETrackedDeviceClass) OpenVR.System.GetInt32TrackedDeviceProperty(i, ETrackedDeviceProperty.Prop_DeviceClass_Int32, ref error);
+                else
+                {
+                    continue;
+                }
 
                 if (pTrackingToUse == ETrackedDeviceClass.Controller && type == ETrackedDeviceClass.Controller
                     || pTrackingToUse == ETrackedDeviceClass.GenericTracker && type == ETrackedDeviceClass.GenericTracker)
@@ -183,6 +187,52 @@ namespace ManusVR
                     }
 
                     DeviceCount++;
+                }
+            }
+        }
+
+        public void SetInputData(List<Vector3> leftPositions, List<Quaternion> leftRotations, 
+            List<Vector3> rightPositions, List<Quaternion> rightRotations, List<Vector3> headPositions, List<Quaternion> headRotations)
+        {
+            newPosesAction.enabled = false;
+            StartCoroutine(PlayRecording(leftPositions, rightPositions, leftRotations, rightRotations, headPositions, headRotations));
+        }
+
+        public void SetInputData(List<Vector3> leftPositions, List<Vector3> rightPositions)
+        {
+            newPosesAction.enabled = false;
+            StartCoroutine(PlayRecording(leftPositions, rightPositions));
+        }
+
+        IEnumerator PlayRecording(List<Vector3> leftPositions, List<Vector3> rightPositions)
+        {
+            int count = leftPositions.Count - 1;
+            while (true)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    leftTracker.localPosition = leftPositions[i];
+                    rightTracker.localPosition = rightPositions[i];
+                    yield return new WaitForFixedUpdate();
+                    
+                }
+            }
+        }IEnumerator PlayRecording(List<Vector3> leftPositions, List<Vector3> rightPositions, List<Quaternion> leftRotations, List<Quaternion> rightRotations
+            , List<Vector3> headPositions, List<Quaternion> headRotations)
+        {
+            int count = leftPositions.Count - 1;
+            while (true)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    leftTracker.localPosition = leftPositions[i];
+                    rightTracker.localPosition = rightPositions[i];
+                    leftTracker.localRotation = leftRotations[i];
+                    rightTracker.localRotation = rightRotations[i];
+                    HMD.localPosition = headPositions[i];
+                    HMD.localRotation = headRotations[i];
+                    yield return new WaitForFixedUpdate();
+                    
                 }
             }
         }

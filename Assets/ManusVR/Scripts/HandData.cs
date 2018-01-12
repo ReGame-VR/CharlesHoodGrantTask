@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using NUnit.Framework.Api;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -46,15 +49,15 @@ namespace ManusVR
         public IntPtr Session { get { return session; } }
         private IntPtr session;
 
-        // Saving the data retrieved from the hand
+        // Saving the leftHand retrieved from the hand
         private manus_hand_t _leftHand;
-        private manus_hand_t _rightHand;
+        internal manus_hand_t _rightHand;
 
-        // Save if the last data was retrieved correctly
+        // Save if the last leftHand was retrieved correctly
         private manus_ret_t _leftRet;
         private manus_ret_t _rightRet;
 
-        public static HandData Instance;
+        //public static HandData Instance;
 
         /// <summary>
         /// Get the close value of the hand
@@ -93,13 +96,13 @@ namespace ManusVR
         // Left hand values
 
         // Use this for initialization
-        void Start()
+        public virtual void Start()
         {
             Manus.ManusInit(out session);
             Manus.ManusSetCoordinateSystem(session, coor_up_t.COOR_Y_UP, coor_handed_t.COOR_LEFT_HANDED);
 
-            if (Instance == null)
-                Instance = this;
+            //if (Instance == null)
+            //    Instance = this;
 
             for (int i = 0; i < 2; i++)
             {
@@ -154,9 +157,9 @@ namespace ManusVR
         public Quaternion GetImuRotation(device_type_t deviceType)
         {
             if (deviceType == device_type_t.GLOVE_LEFT)
-                return transform.parent.rotation * _leftHand.raw.imu[1];
+                return transform.rotation * _leftHand.raw.imu[1];
             else if (deviceType == device_type_t.GLOVE_RIGHT)
-                return transform.parent.rotation * _rightHand.raw.imu[1];
+                return _rightHand.raw.imu[1];
             return transform.parent.rotation;
         }
 
@@ -168,11 +171,11 @@ namespace ManusVR
         public Quaternion GetWristRotation(device_type_t deviceType)
         {
             if (deviceType == device_type_t.GLOVE_LEFT)
-                return transform.parent.rotation * _leftHand.wrist;
+                return transform.rotation * _leftHand.wrist;
             else if (deviceType == device_type_t.GLOVE_RIGHT)
-                return transform.parent.rotation * _rightHand.wrist;
+                return transform.rotation * _rightHand.wrist;
             else
-                return transform.parent.rotation;
+                return transform.rotation;
         }
 
         /// <summary>
@@ -201,7 +204,7 @@ namespace ManusVR
         /// </summary>
         /// <param name="hand"></param>
         /// <returns></returns>
-        private double AverageFingerValue(manus_hand_t hand)
+        internal double AverageFingerValue(manus_hand_t hand)
         {
             int sensors = 0;
             double total = 0;
@@ -218,7 +221,11 @@ namespace ManusVR
             return total / sensors;
         }
 
-        private void UpdateCloseValue(double averageSensorValue, device_type_t deviceType)
+        public double Average(device_type_t deviceType)
+        {
+            return AverageFingerValue(deviceType == device_type_t.GLOVE_RIGHT ? _rightHand : _leftHand);
+        }
+        internal void UpdateCloseValue(double averageSensorValue, device_type_t deviceType)
         {
             var values = Enum.GetValues(typeof(CloseValue));
             HandValue handValue;
@@ -253,6 +260,36 @@ namespace ManusVR
                 _handValues[0] = handValue;
             else
                 _handValues[1] = handValue;
+        }
+
+        public void SetInputData(List<manus_hand_t> handData , device_type_t deviceType)
+        {
+            enabled = false;
+            if (handData.Count != 0)
+                StartCoroutine(PlayRecording(handData, deviceType));
+        }
+
+        IEnumerator PlayRecording(List<manus_hand_t> handData, device_type_t deviceType)
+        {
+            while (true)
+            {
+                foreach (var manusHandT in handData)
+                {
+                    switch (deviceType)
+                    {
+                        case device_type_t.GLOVE_LEFT:
+                            _leftHand = manusHandT;
+                            UpdateCloseValue(AverageFingerValue(_leftHand), deviceType);
+                            break;
+                        case device_type_t.GLOVE_RIGHT:
+                            _rightHand = manusHandT;
+                            UpdateCloseValue(AverageFingerValue(_rightHand), deviceType);
+                            break;
+                    }
+                    yield return new WaitForFixedUpdate();
+                }
+
+            }
         }
     }
 }
