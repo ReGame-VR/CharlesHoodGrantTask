@@ -71,8 +71,9 @@ public class Task : MonoBehaviour {
     // Allows a way to send vibration messages
     public ManusVibrate vibrate;
 
-    // The array of raycasting objects for each finger
-    public FingerRaycaster[] fingerRayArray;
+    // The array of raycasting objects for each finger. Separate arrays for each hand.
+    public FingerRaycaster[] fingerRayArrayLeft;
+    public FingerRaycaster[] fingerRayArrayRight;
 
     // time per trial
     private const float timePerTarget = 10f;
@@ -192,14 +193,8 @@ public class Task : MonoBehaviour {
 	/// <summary>
     /// Run trials.
     /// </summary>
-	void Update () {
+	void FixedUpdate () {
         time += Time.deltaTime;
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            vibrate.VibrateSoftRight();
-            vibrate.VibrateSoftLeft();
-        }
 
         // tick up clock
         curTime += Time.deltaTime;
@@ -227,11 +222,37 @@ public class Task : MonoBehaviour {
     }
 
     // Checks collisions for all finger raycasts and takes appropriate
-    // action. 
+    // action.
+    // posn: Current COB used for ResetTarget method
     private void CheckCollisions(Vector2 posn)
     {
+        FingerRaycaster[] fingerRayArray; 
+
+        if (GlobalControl.Instance.rightHanded)
+        {
+            fingerRayArray = fingerRayArrayRight;
+        }
+        else
+        {
+            fingerRayArray = fingerRayArrayLeft;
+        }
+
         foreach (FingerRaycaster fingerRaycaster in fingerRayArray)
         {
+
+            Vector3 fingerPosition = fingerRaycaster.transform.position;
+            RaycastHit hit;
+
+            if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f))
+            {
+                Debug.Log("Found Ray Collision");
+                Debug.DrawLine(fingerPosition, hit.point, Color.red, 5.0f);
+                //float distanceFromCenterOfTarget = fingerRaycaster.findDistanceFromCenter();
+                VibrateActiveController();
+                ResetTarget(posn);
+            }
+
+
             /*
             if (foundHit)
             {

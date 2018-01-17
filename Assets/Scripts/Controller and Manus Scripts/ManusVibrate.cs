@@ -7,11 +7,6 @@ public class ManusVibrate : MonoBehaviour {
 
     
     public ManusVR.HandData handData;
-	
-	// Update is called once per frame
-	void Update () {
-
-    }
 
     public void VibrateSoftRight()
     {
