@@ -123,9 +123,8 @@ public class Calibrate : MonoBehaviour {
         if (Input.GetMouseButtonUp(0))
         {
             this.CaptureArmLengthShoulderHeight();
-
         }
-        
+
         // Handle any changes to GUI
         COB.GetComponent<RectTransform>().position = new Vector3(canvasOffset.x + posn.x * 0.2f, canvasOffset.y + posn.y * 0.2f, canvasOffset.z);
 

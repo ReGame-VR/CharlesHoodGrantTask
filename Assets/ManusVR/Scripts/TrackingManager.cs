@@ -47,6 +47,10 @@ namespace ManusVR
 
         public KeyCode switchArmsButton = KeyCode.None;
 
+        //Murray Sandmeyer: The left and right Manus models. If one is not being used, make it inactive.
+        public GameObject leftModel;
+        public GameObject rightModel;
+
         // Use this for initialization
         void Start()
         {
@@ -69,6 +73,20 @@ namespace ManusVR
                 devices[i].isValid = false;
 
                 GetIndex(i);
+            }
+
+            //A condition added by Murray Sandmeyer to make the gloves switch hands
+            //if the participant is right handed
+
+            if (GlobalControl.Instance.rightHanded)
+            {
+                leftModel.SetActive(false);
+                //Manus defaults to left hand, so switch arms.
+                SwitchManusArms();
+            }
+            else
+            {
+                rightModel.SetActive(false);
             }
         }
 
@@ -106,13 +124,13 @@ namespace ManusVR
         {
             if (Input.GetKeyDown(switchArmsButton))
             {
-                // Switch the indices around.
-                int leftNum = (int) ERole.LeftHand;
-                int rightNum = (int) ERole.RightHand;
-                int OldLeftIndex = devices[leftNum].index;
+                GlobalControl.Instance.rightHanded = !GlobalControl.Instance.rightHanded;
 
-                devices[leftNum].index = devices[rightNum].index;
-                devices[rightNum].index = OldLeftIndex;
+                //Toggle the models to active or inactive
+                leftModel.SetActive(!leftModel.activeInHierarchy);
+                rightModel.SetActive(!leftModel.activeInHierarchy);
+
+                SwitchManusArms();
             }
         }
 
@@ -235,6 +253,19 @@ namespace ManusVR
                     
                 }
             }
+        }
+
+        // A method made by Murray Sandmeyer to switch the Manus arms when
+        // necessary.
+        private void SwitchManusArms()
+        {
+            // Switch the indices around.
+            int leftNum = (int)ERole.LeftHand;
+            int rightNum = (int)ERole.RightHand;
+            int OldLeftIndex = devices[leftNum].index;
+
+            devices[leftNum].index = devices[rightNum].index;
+            devices[rightNum].index = OldLeftIndex;
         }
     }
 }

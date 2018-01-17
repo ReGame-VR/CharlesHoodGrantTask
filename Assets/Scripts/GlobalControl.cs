@@ -11,6 +11,9 @@ public class GlobalControl : MonoBehaviour {
     // if this is true, the targets are rotating
     public bool isRotation = true;
 
+    // if this is true, participant is right handed
+    public bool rightHanded = true;
+
     // participant ID to differentiate data files
     public string participantID;
 

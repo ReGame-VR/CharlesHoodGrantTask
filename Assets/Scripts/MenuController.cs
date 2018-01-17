@@ -51,6 +51,15 @@ public class MenuController : MonoBehaviour {
     }
 
     /// <summary>
+    /// Sets bool value that determines if participant is right handed
+    /// </summary>
+    /// <param name="rotating"></param>
+    public void SetRightHanded(bool rightHanded)
+    {
+        GlobalControl.Instance.rightHanded = rightHanded;
+    }
+
+    /// <summary>
     /// Loads next scene if wii is connected and participant ID was entered.
     /// </summary>
     public void NextScene()

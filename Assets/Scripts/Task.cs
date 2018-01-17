@@ -68,6 +68,12 @@ public class Task : MonoBehaviour {
     public Material yellowMat;
     public Material greenMat;
 
+    // Allows a way to send vibration messages
+    public ManusVibrate vibrate;
+
+    // The array of raycasting objects for each finger
+    public FingerRaycaster[] fingerRayArray;
+
     // time per trial
     private const float timePerTarget = 10f;
 
@@ -189,6 +195,12 @@ public class Task : MonoBehaviour {
 	void Update () {
         time += Time.deltaTime;
 
+        if (Input.GetMouseButtonUp(0))
+        {
+            vibrate.VibrateSoftRight();
+            vibrate.VibrateSoftLeft();
+        }
+
         // tick up clock
         curTime += Time.deltaTime;
 
@@ -205,12 +217,46 @@ public class Task : MonoBehaviour {
         {
             if (targets[targetIndex].indication == Target.posnIndicator.GREEN)
             {
-                // TODO: implement collision with accuracy
+                CheckCollisions(posn);
             }
         }
         else
         {
             ResetTarget(posn);
+        }
+    }
+
+    // Checks collisions for all finger raycasts and takes appropriate
+    // action. 
+    private void CheckCollisions(Vector2 posn)
+    {
+        foreach (FingerRaycaster fingerRaycaster in fingerRayArray)
+        {
+            /*
+            if (foundHit)
+            {
+                2DVector vectorHit = convert2DVector(hitTransform.position);
+                2DVector vectorTarget = convert2DVector(_gameObject.transform.position);
+
+                distanceFromCenterOfTarget = Math.Abs(vectorHit.magnitude - vectorTarget.magnitude);
+                computeTargetScore(distanceFromCenterOfTarget);
+
+                VibrateActiveController();
+                ResetTarget(posn);
+            }
+            */
+        }
+    }
+
+    private void VibrateActiveController()
+    {
+        if (GlobalControl.Instance.rightHanded)
+        {
+            vibrate.VibrateSoftRight();
+        }
+        else
+        {
+            vibrate.VibrateSoftLeft();
         }
     }
 
