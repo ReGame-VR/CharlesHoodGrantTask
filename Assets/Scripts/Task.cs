@@ -5,7 +5,8 @@ using UnityEngine;
 /// <summary>
 /// The main controller for the task.
 /// </summary>
-public class Task : MonoBehaviour {
+public class Task : MonoBehaviour
+{
     // Event + Delegate for data recording
     public delegate void DataRecording(int trialNum, float time, int targetNum, float targetTime,
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
@@ -35,7 +36,7 @@ public class Task : MonoBehaviour {
     private float midTargetOffset = 0.14f;
 
     // the radius of rotation - from center screw to center of target
-    private float radius = 0.1025f; 
+    private float radius = 0.1025f;
 
     // parameters for weight shift accuracy
     private float dim, halfdim, devdim;
@@ -49,11 +50,11 @@ public class Task : MonoBehaviour {
     // The Camera (head) prefab of the camerarig
     public GameObject head;
 
-    // The target prefab
+    // The target object to be moved in the scene
     public GameObject target;
 
-    // the rotation prefab
-    public GameObject rotationObj;
+    // the rotation object to be moved in the scene
+    public MechanicalRotation rotationObj;
 
     // The left controller 
     //TODO: replace with glove
@@ -80,7 +81,7 @@ public class Task : MonoBehaviour {
 
     // current time of current target
     private float curTime = 0f;
-    
+
     // targets per trial
     private const int targetsPerTrial = 5;
 
@@ -125,16 +126,17 @@ public class Task : MonoBehaviour {
     // for random number generation
     private System.Random rand = new System.Random();
 
-    // gameobject "holder" for target instance
+    // gameobject "holder" for rotation target instance
     private GameObject _gameObject;
 
     // for assigning the correct material
     private Renderer rend;
 
-	/// <summary>
+    /// <summary>
     /// Make calculations for 2D COB positions and 3D world positions based on calibration.
     /// </summary>
-	void Start () {
+    void Start()
+    {
 
         // calculate weightshitft as per PE and 2D VE
         dim = 6f;
@@ -168,7 +170,6 @@ public class Task : MonoBehaviour {
 
         xposRight = maxReachRight * 0.8f - midTargetOffset;
 
-        //TODO Figure out why depth is so small 
         depth = cameraRig.transform.position.z + armLen * 0.8f;
 
         // create the targets
@@ -180,7 +181,8 @@ public class Task : MonoBehaviour {
         targets[5] = new Target(new Vector3(xposRight, min, depth), f);
 
 
-        rend = target.GetComponent<Renderer>();
+        //rend = target.GetComponent<Renderer>();
+        rend = GetCorrectRenderer();
 
         chooseTrialType();
         chooseNextTarget();
@@ -189,11 +191,12 @@ public class Task : MonoBehaviour {
         // get starting posn
         lastPosn = CoPtoCM(Wii.GetCenterOfBalance(0));
     }
-	
-	/// <summary>
+
+    /// <summary>
     /// Run trials.
     /// </summary>
-	void FixedUpdate () {
+    void FixedUpdate()
+    {
         time += Time.deltaTime;
 
         // tick up clock
@@ -226,7 +229,7 @@ public class Task : MonoBehaviour {
     // posn: Current COB used for ResetTarget method
     private void CheckCollisions(Vector2 posn)
     {
-        FingerRaycaster[] fingerRayArray; 
+        FingerRaycaster[] fingerRayArray;
 
         if (GlobalControl.Instance.rightHanded)
         {
@@ -245,30 +248,17 @@ public class Task : MonoBehaviour {
 
             if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f))
             {
-                Debug.Log("Found Ray Collision");
                 Debug.DrawLine(fingerPosition, hit.point, Color.red, 5.0f);
                 //float distanceFromCenterOfTarget = fingerRaycaster.findDistanceFromCenter();
                 VibrateActiveController();
                 ResetTarget(posn);
             }
-
-
-            /*
-            if (foundHit)
-            {
-                2DVector vectorHit = convert2DVector(hitTransform.position);
-                2DVector vectorTarget = convert2DVector(_gameObject.transform.position);
-
-                distanceFromCenterOfTarget = Math.Abs(vectorHit.magnitude - vectorTarget.magnitude);
-                computeTargetScore(distanceFromCenterOfTarget);
-
-                VibrateActiveController();
-                ResetTarget(posn);
-            }
-            */
         }
     }
 
+    /// <summary>
+    /// Vibrates the 
+    /// </summary>
     private void VibrateActiveController()
     {
         if (GlobalControl.Instance.rightHanded)
@@ -297,7 +287,7 @@ public class Task : MonoBehaviour {
     /// <param name="posn">The current COB position</param>
     private void calculateDistances(Vector2 posn)
     {
-        COBdistance += Mathf.Sqrt(Mathf.Pow(posn.x - lastPosn.x, 2) 
+        COBdistance += Mathf.Sqrt(Mathf.Pow(posn.x - lastPosn.x, 2)
             + Mathf.Pow(posn.y - lastPosn.y, 2));
 
         lastPosn = posn;
@@ -324,7 +314,8 @@ public class Task : MonoBehaviour {
         touched = false;
 
         // either select next target in 
-        if (curTarget < targetsPerTrial) {
+        if (curTarget < targetsPerTrial)
+        {
             curTarget++;
             chooseNextTarget();
             placeTarget();
@@ -363,23 +354,19 @@ public class Task : MonoBehaviour {
     {
         if (GlobalControl.Instance.isRotation)
         {
-            _gameObject = Instantiate(rotationObj) as GameObject;
-            _gameObject.transform.position = targets[targetIndex].worldPosn;
+            rotationObj.transform.position = targets[targetIndex].worldPosn;
         }
         else
         {
             Vector3 offset = -new Vector3(radius, 0, 0);
-
-            _gameObject = Instantiate(target) as GameObject;
             if (targetIndex < 3)
             {
-                _gameObject.transform.position = targets[targetIndex].worldPosn - offset;
+                target.transform.position = targets[targetIndex].worldPosn - offset;
             }
             else
             {
-                _gameObject.transform.position = targets[targetIndex].worldPosn + offset;
+                target.transform.position = targets[targetIndex].worldPosn + offset;
             }
-
         }
     }
 
@@ -416,7 +403,7 @@ public class Task : MonoBehaviour {
     private void checkPosn(Vector2 userPosn)
     {
         // indicator is green, user can touch target
-        if ((userPosn.x <= targets[targetIndex].CoPTarget.x + halfdim) 
+        if ((userPosn.x <= targets[targetIndex].CoPTarget.x + halfdim)
             && (userPosn.x >= targets[targetIndex].CoPTarget.x - halfdim)
             && (userPosn.y <= targets[targetIndex].CoPTarget.y + halfdim)
             && (userPosn.y >= targets[targetIndex].CoPTarget.y - halfdim))
@@ -458,6 +445,23 @@ public class Task : MonoBehaviour {
             default:
                 rend.material = redMat;
                 break;
+        }
+    }
+
+    /// <summary>
+    /// Gets the renderer necessary to change color. Either the rotation renderer or
+    /// the stationary renderer.
+    /// </summary>
+    /// <returns></returns> The correct renderer whose color to change.
+    private Renderer GetCorrectRenderer()
+    {
+        if (GlobalControl.Instance.isRotation)
+        {
+            return rotationObj.GetComponentInChildren<Renderer>();
+        }
+        else
+        {
+            return target.GetComponent<Renderer>();
         }
     }
 }

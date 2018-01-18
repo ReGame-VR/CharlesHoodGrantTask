@@ -29,7 +29,7 @@ public class DataHandler : MonoBehaviour {
             // write header
             CsvRow header = new CsvRow();
             header.Add("Trial Number");
-            header.Add("Time");
+            header.Add("Time left in trial");
             header.Add("Target Number");
             header.Add("Weight Shift Success");
             header.Add("Button Success");

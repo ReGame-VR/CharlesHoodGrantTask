@@ -44,10 +44,15 @@ public class Rotation : MonoBehaviour {
         speed = (2 * Mathf.PI) / secondsPerRotation;
     }
 
+    void Update()
+    {
+        Rotate();
+    }
+
     /// <summary>
     /// updates the position based on rotation settings
     /// </summary>
-    void Update()
+    private void Rotate()
     {
         // in case the object itself is moving
         updateCenterPosn();
