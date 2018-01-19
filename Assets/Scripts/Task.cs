@@ -248,8 +248,10 @@ public class Task : MonoBehaviour
 
             if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f))
             {
-                Debug.DrawLine(fingerPosition, hit.point, Color.red, 5.0f);
-                //float distanceFromCenterOfTarget = fingerRaycaster.findDistanceFromCenter();
+                float distanceFromCenter = findPointDistanceFromCenter(hit.point);
+                //Debug.Log(distanceFromCenter.ToString("F4"));
+                targetScore = Target.ScoreTouch2(distanceFromCenter, curTime);
+                Debug.Log("Target Score:" + targetScore.ToString());
                 VibrateActiveController();
                 ResetTarget(posn);
             }
@@ -257,7 +259,34 @@ public class Task : MonoBehaviour
     }
 
     /// <summary>
-    /// Vibrates the 
+    /// Finds the distance from the center
+    /// of a target with a raycast hit point.
+    /// </summary>
+    /// <param name="point"></param> The 3D raycast hit point
+    /// <returns></returns>float that is the distance
+    private float findPointDistanceFromCenter(Vector3 point)
+    {
+        Vector2 hit2d = new Vector2(point.x, point.y);
+
+        if (GlobalControl.Instance.isRotation)
+        {
+            //gets the transform of the child of the rotating arm
+            float x = rotationObj.transform.GetChild(0).position.x;
+            float y = rotationObj.transform.GetChild(0).position.y;
+            Vector2 centerOfMovingTarget = new Vector2(x, y);
+            return Vector2.Distance(hit2d, centerOfMovingTarget);
+        }
+        else
+        {
+            float x = target.transform.position.x;
+            float y = target.transform.position.y;
+            Vector2 centerOfStationaryTarget = new Vector2(x, y);
+            return Vector2.Distance(hit2d, centerOfStationaryTarget);
+        }
+    }
+
+    /// <summary>
+    /// Vibrates the controller on the correct hand.
     /// </summary>
     private void VibrateActiveController()
     {

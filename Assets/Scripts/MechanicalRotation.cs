@@ -21,7 +21,7 @@ public class MechanicalRotation : MonoBehaviour
     [SerializeField]
     private float secondsPerRotation;
 
-    // Rotates the object mechanically
+    // Rotates the object mechanically.
     void Update()
     {
         //This currently rotates around Z axis, update so it can do multiple axes.

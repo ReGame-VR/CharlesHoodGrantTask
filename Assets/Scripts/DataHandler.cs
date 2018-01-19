@@ -91,7 +91,7 @@ public class DataHandler : MonoBehaviour {
     /// at the end of the session. It is called when the trial over event fires.
     /// </summary>
     /// <param name="trialNum"> Which trial number this is </param>
-    /// <param name="time"> ??? </param>
+    /// <param name="time"> 
     /// <param name="targetNum"> the index of the target - one indexed for recording purposes</param>
     /// <param name="targetTime"> Time it took to weight shift and touch target, or 10 seconds
     ///                           if target was not successfully touched </param>

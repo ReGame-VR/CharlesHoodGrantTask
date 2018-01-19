@@ -31,6 +31,8 @@ public class Target {
     }
 
     /// <summary>
+    /// Written by Caroline
+    /// 
     /// Returns the score based on the 2D point IN RELATION TO THE CENTER OF THE TARGET
     /// and the time it was hit. Must translate from Unity units (meters) to pixels due
     /// to physical environment.
@@ -46,6 +48,29 @@ public class Target {
 
         float accuracy = (100 - Mathf.Abs(point.x * pixPerM - 500)/10 
             + Mathf.Abs(point.y * pixPerM -500) / 10)*0.9f;
+
+        return speed + accuracy;
+    }
+
+    /// <summary>
+    /// Written by Murray
+    /// 
+    /// Finds the score of a target touch based on the distance
+    /// from the center of the target and the current time.
+    /// accuracy on a scale from 1-10. Higher accuracy means closer to center.
+    /// time remaining 1-10.
+    /// 
+    /// </summary>
+    /// <param name="distanceFromCenter"></param>distance from center of target
+    /// <param name="currTime"></param>current time in the trial
+    /// <returns></returns>
+    public static float ScoreTouch2(float distanceFromCenter, float currTime)
+    {
+        float speed = 10 - currTime;
+
+        float accuracy = 10 - (distanceFromCenter * 240);
+
+        Debug.Log("Accuracy: " + accuracy.ToString());
 
         return speed + accuracy;
     }
