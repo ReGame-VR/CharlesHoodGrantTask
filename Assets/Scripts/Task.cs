@@ -253,7 +253,7 @@ public class Task : MonoBehaviour
             Vector3 fingerPosition = fingerRaycaster.transform.position;
             RaycastHit hit;
 
-            if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f))
+            if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f) && hit.collider.tag == "Target")
             {
                 float distanceFromCenter = findPointDistanceFromCenter(hit.point);
                 targetScore = Target.ScoreTouch2(distanceFromCenter, curTime);
