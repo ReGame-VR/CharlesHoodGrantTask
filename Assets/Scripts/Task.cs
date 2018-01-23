@@ -54,7 +54,7 @@ public class Task : MonoBehaviour
     public GameObject target;
 
     // the rotation object to be moved in the scene
-    public MechanicalRotation rotationObj;
+    public GameObject rotationObj;
 
     // The left controller 
     //TODO: replace with glove
@@ -132,6 +132,14 @@ public class Task : MonoBehaviour
     // for assigning the correct material
     private Renderer rend;
 
+    // The canvas displaying score during the task
+    private TaskCanvas taskCanvas;
+
+    void Awake()
+    {
+        taskCanvas = GetComponent<TaskCanvas>();
+    }
+
     /// <summary>
     /// Make calculations for 2D COB positions and 3D world positions based on calibration.
     /// </summary>
@@ -170,7 +178,7 @@ public class Task : MonoBehaviour
 
         xposRight = maxReachRight * 0.8f - midTargetOffset;
 
-        depth = cameraRig.transform.position.z + armLen * 0.8f;
+        depth = cameraRig.transform.position.z + armLen * 0.8f; // armLen * 0.8f ?
 
         // create the targets
         targets[0] = new Target(new Vector3(xposLeft, min, depth), e);
@@ -180,9 +188,8 @@ public class Task : MonoBehaviour
         targets[4] = new Target(new Vector3(xposRight + midTargetOffset, mid, depth), d);
         targets[5] = new Target(new Vector3(xposRight, min, depth), f);
 
-
-        //rend = target.GetComponent<Renderer>();
-        rend = GetCorrectRenderer();
+        //Set up either the stationary target or the rotating target
+        rend = SetUpTargetsAndRenderer();
 
         chooseTrialType();
         chooseNextTarget();
@@ -249,9 +256,7 @@ public class Task : MonoBehaviour
             if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f))
             {
                 float distanceFromCenter = findPointDistanceFromCenter(hit.point);
-                //Debug.Log(distanceFromCenter.ToString("F4"));
                 targetScore = Target.ScoreTouch2(distanceFromCenter, curTime);
-                Debug.Log("Target Score:" + targetScore.ToString());
                 VibrateActiveController();
                 ResetTarget(posn);
             }
@@ -329,6 +334,11 @@ public class Task : MonoBehaviour
     /// <param name="posn"> The current COB posn IN TERMS OF CM</param>
     private void ResetTarget(Vector2 posn)
     {
+        // update targetScore text and trial score and total score
+        taskCanvas.UpdateTargetScoreText(targetScore);
+        trialScore = trialScore + targetScore;
+        cumulativeScore = cumulativeScore + targetScore;
+
         if (OnRecordData != null)
         {
             // note: convert target index to a one-indexed value for data recording
@@ -337,12 +347,14 @@ public class Task : MonoBehaviour
                 posn, COBdistance, targetScore, trialScore, cumulativeScore);
         }
 
+
+
         curTime = 0;
         targetScore = 0;
         COBdistance = 0;
         touched = false;
 
-        // either select next target in 
+        // trial is not yet over
         if (curTarget < targetsPerTrial)
         {
             curTarget++;
@@ -356,6 +368,7 @@ public class Task : MonoBehaviour
         // task is over
         else
         {
+            taskCanvas.UpdateTotalScoreText(cumulativeScore);
             // TODO: HANDLE ENDGAME
         }
     }
@@ -366,6 +379,8 @@ public class Task : MonoBehaviour
     /// </summary>
     private void ResetTrial()
     {
+        taskCanvas.UpdateTrialScoreText(trialScore);
+
         curTarget = 1;
         curTrial++;
         trialScore = 0;
@@ -479,17 +494,19 @@ public class Task : MonoBehaviour
 
     /// <summary>
     /// Gets the renderer necessary to change color. Either the rotation renderer or
-    /// the stationary renderer.
+    /// the stationary renderer. Also disables the unnecessary target (rotating or not)
     /// </summary>
     /// <returns></returns> The correct renderer whose color to change.
-    private Renderer GetCorrectRenderer()
+    private Renderer SetUpTargetsAndRenderer()
     {
         if (GlobalControl.Instance.isRotation)
         {
+            target.SetActive(false);
             return rotationObj.GetComponentInChildren<Renderer>();
         }
         else
         {
+            rotationObj.SetActive(false);
             return target.GetComponent<Renderer>();
         }
     }

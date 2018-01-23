@@ -70,8 +70,6 @@ public class Target {
 
         float accuracy = 10 - (distanceFromCenter * 240);
 
-        Debug.Log("Accuracy: " + accuracy.ToString());
-
         return speed + accuracy;
     }
 }

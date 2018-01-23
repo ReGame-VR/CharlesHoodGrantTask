@@ -180,7 +180,5 @@ public class Calibrate : MonoBehaviour {
             armLen = Mathf.Abs(leftHand.transform.position.z - hmd.transform.position.z);
             shoulderHeight = leftHand.transform.position.y;
         }
-        Debug.Log("Arm Length: " + armLen.ToString());
-
     }
 }

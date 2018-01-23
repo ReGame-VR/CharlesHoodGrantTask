@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MechanicalRotation : MonoBehaviour
 {
-    /*
+    
     /// The axis the object will rotate around - I.E. the axis that doesn't move.
     [SerializeField]
     private RotationAxis axis;
@@ -15,7 +15,6 @@ public class MechanicalRotation : MonoBehaviour
 
     /// the angle that the rotating object is currently on - dictated by time
     private float angle;
-    */
 
     /// the time, in seconds, it takes for one rotation
     [SerializeField]

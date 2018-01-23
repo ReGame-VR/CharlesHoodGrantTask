@@ -220,5 +220,79 @@ namespace ManusVR
                 } // for loop for the joints
             } // for loop for the hands
         } // void Update()
+
+        /// <summary>
+        /// Written by Murray Sandmeyer to force calibration upon entering a scene. Copied exactly from the 
+        /// update method above, except calibration will happen regardless of key press.
+        /// </summary>
+        public void RunUpdateProcedureWithMandatoryCalibration()
+        {
+            // Update the hands. Most of this data is based directly on the sensors.
+            // Hand 0 is the left one, hand 1 the right.
+            HandAlignmentKeys[] alignmentKeys = new HandAlignmentKeys[2] { LeftAlignmentKeys, RightAlignmentKeys };
+            Vector3[] postRotEuler = new Vector3[2] { PostRotLeft, PostRotRight };
+            Vector3[] postRotThumbEuler = new Vector3[2] { PostRotThumbLeft, PostRotThumbRight };
+
+            for (int handNum = 0; handNum < 2; handNum++)
+            {
+                device_type_t deviceType = (device_type_t)handNum;
+                if (!HandData.ValidOutput(deviceType)) continue;
+
+                // Adjust the default orientation of the hand when the CalibrateKey is pressed.
+                // **THIS IS WHAT MURRAY CHANGED**
+                if (true /*Input.GetKeyDown(CalibrateKey)*/)
+                {
+                    Debug.Log("Calibrated a hand.");
+                    _wristTransforms[handNum].rotation = HandData.GetWristRotation(deviceType) * Quaternion.Euler(postRotEuler[handNum]);
+                    float offset = _wristTransforms[handNum].localEulerAngles.z;
+                    if (offset > 180)
+                        offset -= 360;
+                    handYawOffsets[handNum] = -offset;
+                }
+
+                // Manually rotate the hands with the HandAlignmentKeys.
+                switch (alignmentKeys[handNum])
+                {
+                    case HandAlignmentKeys.None:
+                        break;
+                    case HandAlignmentKeys.QW:
+                        if (Input.GetKey(KeyCode.Q))
+                            handYawOffsets[handNum] -= 1.0f;
+                        else if (Input.GetKey(KeyCode.W))
+                            handYawOffsets[handNum] += 1.0f;
+                        break;
+                    case HandAlignmentKeys.AS:
+                        if (Input.GetKey(KeyCode.A))
+                            handYawOffsets[handNum] -= 1.0f;
+                        else if (Input.GetKey(KeyCode.S))
+                            handYawOffsets[handNum] += 1.0f;
+                        break;
+                    default:
+                        Debug.LogWarning("The alignment keys for the " + (handNum == 0 ? "left" : "right") + " hand are set to an unknown value.");
+                        break;
+                }
+
+
+                // Set the wrist rotation.
+                Quaternion postRot = Quaternion.Euler(postRotEuler[handNum]);
+                _wristTransforms[handNum].rotation = Quaternion.Euler(0.0f, handYawOffsets[handNum], 0.0f) * HandData.GetWristRotation(deviceType) * postRot;
+
+                // Set the rotation of the fingers.
+                for (int joint = 3; joint >= 1; joint--)
+                {
+                    // Set this joint for all the fingers.
+                    for (int finger = 0; finger < 5; finger++)
+                        _fingerTransforms[handNum][finger][joint].localRotation = HandData.GetFingerRotation((Finger)finger, deviceType, joint);
+
+                    // Handle joint 1 differently from the rest for the thumb.
+                    if (joint == 1)
+                    {
+                        Quaternion postRotThumb = Quaternion.Euler(postRotThumbEuler[handNum]);
+                        _fingerTransforms[handNum][0][joint].rotation = Quaternion.Euler(0.0f, handYawOffsets[handNum], 0.0f) * HandData.GetImuRotation(deviceType) * postRotThumb;
+                        //_fingerTransforms[handNum][0][joint].localRotation =  HandData.Instance.GetImuRotation(deviceType) * postRotThumb;
+                    }
+                } // for loop for the joints
+            } // for loop for the hands
+        } //end of method
     }
 }
