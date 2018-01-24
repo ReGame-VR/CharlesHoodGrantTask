@@ -17,9 +17,13 @@ public class TaskCanvas : MonoBehaviour {
     [SerializeField]
     private Text trialScoreText;
 
-    // The canvas for the task
+    // The text displaying the total (cumulative) score
     [SerializeField]
     private Text totalScoreText;
+
+    // The text that displays when the game is over
+    [SerializeField]
+    private Text gameOverText;
 
     void Start()
     {
@@ -27,6 +31,7 @@ public class TaskCanvas : MonoBehaviour {
         targetScoreText.text = "Target Score: 0";
         trialScoreText.text = "Trial Score: 0";
         totalScoreText.text = "Total Score: 0";
+        gameOverText.text = "";
     }
 
     /// <summary>
@@ -70,6 +75,14 @@ public class TaskCanvas : MonoBehaviour {
     public void UpdateTotalScoreText(float score)
     {
         totalScoreText.text = "Total Score: " + Mathf.Round(score).ToString();
+    }
+
+    /// <summary>
+    /// Enables the game over text to be displayed when the game is over
+    /// </summary>
+    public void EnableGameOverText()
+    {
+        gameOverText.text = "Game Over! Press Space to Restart";
     }
 
 }

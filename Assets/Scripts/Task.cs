@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// The main controller for the task.
@@ -129,6 +130,9 @@ public class Task : MonoBehaviour
     // gameobject "holder" for rotation target instance
     private GameObject _gameObject;
 
+    // Tells if the game is over
+    private bool gameOver = false;
+
     // for assigning the correct material
     private Renderer rend;
 
@@ -204,6 +208,23 @@ public class Task : MonoBehaviour
     /// </summary>
     void FixedUpdate()
     {
+        if (gameOver)
+        {
+            Debug.Log("Game over, waiting for space");
+            // Game is over, make targets inactive and check
+            // to see if space was pressed to restart scene.
+            rotationObj.SetActive(false);
+            target.SetActive(false);
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                SceneManager.LoadScene("Task");
+            }
+            else
+            {
+                return;
+            }
+        }
+
         time += Time.deltaTime;
 
         // tick up clock
@@ -215,7 +236,7 @@ public class Task : MonoBehaviour
         // for data recording total distance of weight shift per target
         calculateDistances(posn);
 
-        //
+        // check to see if color of target should change
         checkPosn(posn);
 
         if (curTime < timePerTarget)
@@ -227,6 +248,8 @@ public class Task : MonoBehaviour
         }
         else
         {
+            // failed to hit target in time
+            GetComponent<SoundEffectPlayer>().PlayFailSound();
             ResetTarget(posn);
         }
     }
@@ -255,8 +278,10 @@ public class Task : MonoBehaviour
 
             if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f) && hit.collider.tag == "Target")
             {
+                // The player hit the target!
                 float distanceFromCenter = findPointDistanceFromCenter(hit.point);
                 targetScore = Target.ScoreTouch2(distanceFromCenter, curTime);
+                GetComponent<SoundEffectPlayer>().PlaySuccessSound();
                 VibrateActiveController();
                 ResetTarget(posn);
             }
@@ -369,7 +394,8 @@ public class Task : MonoBehaviour
         else
         {
             taskCanvas.UpdateTotalScoreText(cumulativeScore);
-            // TODO: HANDLE ENDGAME
+            taskCanvas.EnableGameOverText();
+            gameOver = true;
         }
     }
 
