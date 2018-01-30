@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4432155798415660}
   - component: {fileID: 198570594839946684}
   - component: {fileID: 199348485352466722}
+  - component: {fileID: 114514917451135800}
   m_Layer: 0
   m_Name: Success Particle Object
   m_TagString: Untagged
@@ -41,6 +42,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114514917451135800
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1353087658748562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e82f46eaa0c56f4e8a22106e71f87d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  secondsToWait: 5
+  objectToDestroy: {fileID: 1353087658748562}
 --- !u!198 &198570594839946684
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -101,7 +115,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 409096949
+  randomSeed: 248146000
   InitialModule:
     serializedVersion: 3
     enabled: 1

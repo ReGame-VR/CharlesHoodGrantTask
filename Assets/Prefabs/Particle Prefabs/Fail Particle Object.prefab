@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4788531513053652}
   - component: {fileID: 198423568510382940}
   - component: {fileID: 199701439632151226}
+  - component: {fileID: 114406362621278760}
   m_Layer: 0
   m_Name: Fail Particle Object
   m_TagString: Untagged
@@ -41,6 +42,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114406362621278760
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1274977543855532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e82f46eaa0c56f4e8a22106e71f87d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  secondsToWait: 5
+  objectToDestroy: {fileID: 1274977543855532}
 --- !u!198 &198423568510382940
 ParticleSystem:
   m_ObjectHideFlags: 1

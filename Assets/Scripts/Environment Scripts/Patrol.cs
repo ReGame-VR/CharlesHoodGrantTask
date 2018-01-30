@@ -4,6 +4,11 @@ using UnityEngine.AI;
 // This class was written by Unity on their Navigation documentation.
 public class Patrol : MonoBehaviour
 {
+
+    // Does this patroller need to worry about a blend tree ?
+    [SerializeField]
+    private bool blendTree = true;
+
     // The multiplier at which the blend tree factor is affected
     [SerializeField]
     private float multiplier = 100;
@@ -51,8 +56,10 @@ public class Patrol : MonoBehaviour
             GotoNextPoint();
         }
 
-        float speedFloat = agent.velocity.sqrMagnitude * multiplier;
-        animator.SetFloat("BlendFactor", speedFloat);
-
+        if (blendTree)
+        {
+            float speedFloat = agent.velocity.sqrMagnitude * multiplier;
+            animator.SetFloat("BlendFactor", speedFloat);
+        }
     }
 }

@@ -177,7 +177,7 @@ public class Task : MonoBehaviour
 
         xposRight = maxReachRight * 0.8f - midTargetOffset;
 
-        depth = cameraRig.transform.position.z + armLen * 0.8f; // armLen * 0.8f ?
+        depth = cameraRig.transform.position.z + armLen; // armLen * 0.8f ?
 
         // create the targets
         targets[0] = new Target(new Vector3(xposLeft, min, depth), e);
