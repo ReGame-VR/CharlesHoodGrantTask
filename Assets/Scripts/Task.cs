@@ -9,9 +9,10 @@ using UnityEngine.SceneManagement;
 public class Task : MonoBehaviour
 {
     // Event + Delegate for data recording
-    public delegate void DataRecording(int trialNum, float time, int targetNum, float targetTime,
+    public delegate void DataRecording(string participantId, bool rightHanded, 
+            bool isRotation, int trialNum, float time, int targetNum, float targetTime,
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
-            Vector2 weightPosn, float COPTotalPath, float targetScore, float trialScore,
+            Vector2 weightPosn, float COPTotalPath, float trialScore,
             float cumulativeScore);
 
     public static DataRecording OnRecordData;
@@ -32,6 +33,12 @@ public class Task : MonoBehaviour
     private float maxReachRight = GlobalControl.Instance.maxRightReach;
 
     private float maxReachLeft = GlobalControl.Instance.maxLeftReach;
+
+    private bool isRotation = GlobalControl.Instance.isRotation;
+
+    private bool rightHanded = GlobalControl.Instance.rightHanded;
+
+    private string participantId = GlobalControl.Instance.participantID;
 
     // offset between middle and top/bottom in the physical environment
     private float midTargetOffset = 0.14f;
@@ -83,20 +90,11 @@ public class Task : MonoBehaviour
     // current time of current target
     private float curTime = 0f;
 
-    // targets per trial
-    private const int targetsPerTrial = 5;
-
-    // current target in trial block
-    private int curTarget = 1;
-
     // number of trials
-    private const int numTrials = 5;
+    private const int numTrials = 20;
 
     // current trial number
     private int curTrial = 1;
-
-    // score per target
-    private float targetScore = 0;
 
     // score per trial
     private float trialScore = 0;
@@ -114,8 +112,8 @@ public class Task : MonoBehaviour
     // current target index
     private int targetIndex;
 
-    // is the trial random or the set sequence?
-    private bool isSequence;
+    // is the trial random sequence?
+    private bool isRandomSequence = true;
 
     // data recording trials
     // what is this?
@@ -126,9 +124,6 @@ public class Task : MonoBehaviour
 
     // for random number generation
     private System.Random rand = new System.Random();
-
-    // gameobject "holder" for rotation target instance
-    private GameObject _gameObject;
 
     // Tells if the game is over
     private bool gameOver = false;
@@ -195,7 +190,6 @@ public class Task : MonoBehaviour
         //Set up either the stationary target or the rotating target
         rend = SetUpTargetsAndRenderer();
 
-        chooseTrialType();
         chooseNextTarget();
         placeTarget();
 
@@ -210,7 +204,6 @@ public class Task : MonoBehaviour
     {
         if (gameOver)
         {
-            Debug.Log("Game over, waiting for space");
             // Game is over, make targets inactive and check
             // to see if space was pressed to restart scene.
             rotationObj.SetActive(false);
@@ -221,6 +214,7 @@ public class Task : MonoBehaviour
             }
             else
             {
+                // The game is over, don't run any of the following code.
                 return;
             }
         }
@@ -243,7 +237,14 @@ public class Task : MonoBehaviour
         {
             if (targets[targetIndex].indication == Target.posnIndicator.GREEN)
             {
+                // Target is unlocked, check to see if player hit it
                 CheckCollisions(posn);
+            }
+            else
+            {
+                // Target is still locked, check to see if player touched
+                // it to give light haptic feedback
+                CheckLockedCollisions();
             }
         }
         else
@@ -259,20 +260,10 @@ public class Task : MonoBehaviour
     // posn: Current COB used for ResetTarget method
     private void CheckCollisions(Vector2 posn)
     {
-        FingerRaycaster[] fingerRayArray;
-
-        if (GlobalControl.Instance.rightHanded)
-        {
-            fingerRayArray = fingerRayArrayRight;
-        }
-        else
-        {
-            fingerRayArray = fingerRayArrayLeft;
-        }
+        FingerRaycaster[] fingerRayArray = GetCorrectFingerArray();
 
         foreach (FingerRaycaster fingerRaycaster in fingerRayArray)
         {
-
             Vector3 fingerPosition = fingerRaycaster.transform.position;
             RaycastHit hit;
 
@@ -280,10 +271,31 @@ public class Task : MonoBehaviour
             {
                 // The player hit the target!
                 float distanceFromCenter = findPointDistanceFromCenter(hit.point);
-                targetScore = Target.ScoreTouch2(distanceFromCenter, curTime);
+                trialScore = Target.ScoreTouch2(distanceFromCenter, curTime);
+                touched = true;
                 GetComponent<SoundEffectPlayer>().PlaySuccessSound();
                 VibrateActiveController();
                 ResetTarget(posn);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Checks if the player touched a LOCKED target
+    /// </summary>
+    private void CheckLockedCollisions()
+    {
+        FingerRaycaster[] fingerRayArray = GetCorrectFingerArray();
+
+        foreach (FingerRaycaster fingerRaycaster in fingerRayArray)
+        {
+            Vector3 fingerPosition = fingerRaycaster.transform.position;
+            RaycastHit hit;
+
+            if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f) && hit.collider.tag == "Target")
+            {
+                // The player touched a locked target
+                VibrateActiveControllerVerySoftly();
             }
         }
     }
@@ -320,13 +332,28 @@ public class Task : MonoBehaviour
     /// </summary>
     private void VibrateActiveController()
     {
-        if (GlobalControl.Instance.rightHanded)
+        if (rightHanded)
         {
             vibrate.VibrateSoftRight();
         }
         else
         {
             vibrate.VibrateSoftLeft();
+        }
+    }
+
+    /// <summary>
+    /// Vibrates the controller on the correct hand (very softly).
+    /// </summary>
+    private void VibrateActiveControllerVerySoftly()
+    {
+        if (rightHanded)
+        {
+            vibrate.VibrateVerySoftRight();
+        }
+        else
+        {
+            vibrate.VibrateVerySoftLeft();
         }
     }
 
@@ -359,34 +386,27 @@ public class Task : MonoBehaviour
     /// <param name="posn"> The current COB posn IN TERMS OF CM</param>
     private void ResetTarget(Vector2 posn)
     {
-        // update targetScore text and trial score and total score
-        taskCanvas.UpdateTargetScoreText(targetScore);
-        trialScore = trialScore + targetScore;
-        cumulativeScore = cumulativeScore + targetScore;
+        // update trial score and total score
+        taskCanvas.UpdateTrialScoreText(trialScore);
+        cumulativeScore = cumulativeScore + trialScore;
 
         if (OnRecordData != null)
         {
             // note: convert target index to a one-indexed value for data recording
-            OnRecordData(curTrial, time, targetIndex + 1, curTime,
-                (targets[targetIndex].indication == Target.posnIndicator.GREEN), touched, isSequence,
-                posn, COBdistance, targetScore, trialScore, cumulativeScore);
+            OnRecordData(participantId, rightHanded, isRotation, curTrial, time, targetIndex + 1, curTime,
+                (targets[targetIndex].indication == Target.posnIndicator.GREEN), touched, isRandomSequence,
+                posn, COBdistance, trialScore, cumulativeScore);
         }
 
 
 
         curTime = 0;
-        targetScore = 0;
+        trialScore = 0;
         COBdistance = 0;
         touched = false;
 
-        // trial is not yet over
-        if (curTarget < targetsPerTrial)
-        {
-            curTarget++;
-            chooseNextTarget();
-            placeTarget();
-        }
-        else if (curTrial < numTrials)
+
+        if (curTrial < numTrials)
         {
             ResetTrial();
         }
@@ -405,13 +425,10 @@ public class Task : MonoBehaviour
     /// </summary>
     private void ResetTrial()
     {
-        taskCanvas.UpdateTrialScoreText(trialScore);
 
-        curTarget = 1;
         curTrial++;
         trialScore = 0;
 
-        chooseTrialType();
         chooseNextTarget();
         placeTarget();
     }
@@ -422,7 +439,7 @@ public class Task : MonoBehaviour
     /// </summary>
     private void placeTarget()
     {
-        if (GlobalControl.Instance.isRotation)
+        if (isRotation)
         {
             rotationObj.transform.position = targets[targetIndex].worldPosn;
         }
@@ -441,18 +458,11 @@ public class Task : MonoBehaviour
     }
 
     /// <summary>
-    /// Choose the next target randomly, or the next target in the sequence. 
+    /// Choose the next target randomly
     /// </summary>
     private void chooseNextTarget()
     {
-        if (isSequence)
-        {
-            targetIndex = sequence[curTarget - 1];
-        }
-        else
-        {
-            targetIndex = rand.Next(6);
-        }
+        targetIndex = rand.Next(6);        
     }
 
     /// <summary>
@@ -462,7 +472,7 @@ public class Task : MonoBehaviour
     {
         int r = rand.Next(2);
 
-        isSequence = (r == 1);
+        isRandomSequence = (r == 1);
     }
 
     /// <summary>
@@ -525,7 +535,7 @@ public class Task : MonoBehaviour
     /// <returns></returns> The correct renderer whose color to change.
     private Renderer SetUpTargetsAndRenderer()
     {
-        if (GlobalControl.Instance.isRotation)
+        if (isRotation)
         {
             target.SetActive(false);
             return rotationObj.GetComponentInChildren<Renderer>();
@@ -534,6 +544,22 @@ public class Task : MonoBehaviour
         {
             rotationObj.SetActive(false);
             return target.GetComponent<Renderer>();
+        }
+    }
+
+    /// <summary>
+    /// Gets the currently active fingerRayArray for collision checking
+    /// </summary>
+    /// <returns></returns> The left or right set of finger rays
+    private FingerRaycaster[] GetCorrectFingerArray()
+    {
+        if (rightHanded)
+        {
+            return fingerRayArrayRight;
+        }
+        else
+        {
+            return fingerRayArrayLeft;
         }
     }
 }

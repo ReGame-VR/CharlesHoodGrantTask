@@ -9,10 +9,6 @@ public class TaskCanvas : MonoBehaviour {
     [SerializeField]
     private Canvas canvas;
 
-    // The text displaying the target score
-    [SerializeField]
-    private Text targetScoreText;
-
     // The text displaying the trial score
     [SerializeField]
     private Text trialScoreText;
@@ -28,7 +24,6 @@ public class TaskCanvas : MonoBehaviour {
     void Start()
     {
         canvas.enabled = true;
-        targetScoreText.text = "Target Score: 0";
         trialScoreText.text = "Trial Score: 0";
         totalScoreText.text = "Total Score: 0";
         gameOverText.text = "";
@@ -48,15 +43,6 @@ public class TaskCanvas : MonoBehaviour {
     public void TurnOffCanvas()
     {
         canvas.enabled = false;
-    }
-
-    /// <summary>
-    /// Updates the score displayed on the target score text 
-    /// </summary>
-    /// <param name="score"></param> given target score
-    public void UpdateTargetScoreText(float score)
-    {
-        targetScoreText.text = "Target Score: " + Mathf.Round(score).ToString();
     }
 
     /// <summary>
