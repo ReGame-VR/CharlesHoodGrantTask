@@ -251,13 +251,15 @@ public class Task : MonoBehaviour
         {
             // failed to hit target in time
             GetComponent<SoundEffectPlayer>().PlayFailSound();
+            TriggerFailParticles();
             ResetTarget(posn);
         }
     }
 
-    // Checks collisions for all finger raycasts and takes appropriate
-    // action.
-    // posn: Current COB used for ResetTarget method
+    /// <summary>
+    /// Checks to see if the user's finger touched an unlocked target
+    /// </summary>
+    /// <param name="posn"></param> The parameter necessary for the ResetTarget method
     private void CheckCollisions(Vector2 posn)
     {
         FingerRaycaster[] fingerRayArray = GetCorrectFingerArray();
@@ -269,11 +271,13 @@ public class Task : MonoBehaviour
 
             if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f) && hit.collider.tag == "Target")
             {
-                // The player hit the target!
+                // The player hit the target! Calculate score, play success sound,
+                // spawn success particles, give vibration feedback, reset target.
                 float distanceFromCenter = findPointDistanceFromCenter(hit.point);
                 trialScore = Target.ScoreTouch2(distanceFromCenter, curTime);
                 touched = true;
                 GetComponent<SoundEffectPlayer>().PlaySuccessSound();
+                TriggerSuccessParticles();
                 VibrateActiveController();
                 ResetTarget(posn);
             }
@@ -294,7 +298,7 @@ public class Task : MonoBehaviour
 
             if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f) && hit.collider.tag == "Target")
             {
-                // The player touched a locked target
+                // The player touched a locked target so give light feedback
                 VibrateActiveControllerVerySoftly();
             }
         }
@@ -560,6 +564,40 @@ public class Task : MonoBehaviour
         else
         {
             return fingerRayArrayLeft;
+        }
+    }
+    
+    /// <summary>
+    /// Triggers the spawning of *success* particles on the attached particle spawner
+    /// </summary>
+    private void TriggerSuccessParticles()
+    {
+        ParticleSpawner spawner = GetComponent<ParticleSpawner>();
+
+        if (GlobalControl.Instance.isRotation)
+        {
+            spawner.SpawnSuccessParticles(rotationObj.transform.GetChild(0).position);
+        }
+        else
+        {
+            spawner.SpawnSuccessParticles(target.transform.position);
+        }
+    }
+
+    /// <summary>
+    /// Triggers the spawning of *fail* particles on the attached particle spawner
+    /// </summary>
+    private void TriggerFailParticles()
+    {
+        ParticleSpawner spawner = GetComponent<ParticleSpawner>();
+
+        if (GlobalControl.Instance.isRotation)
+        {
+            spawner.SpawnFailParticles(rotationObj.transform.GetChild(0).position);
+        }
+        else
+        {
+            spawner.SpawnFailParticles(target.transform.position);
         }
     }
 }

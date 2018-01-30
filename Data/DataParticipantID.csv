@@ -1,5 +1,6 @@
-Trial Number,Global Time,Target Number,Target Time,Weight Shift Success?,Button Success?,Random Sequence?,X Coord of COP,Y Coord of COP,COP Total Path,Target Score,Trial Score,Cumulative Score
-1,10.00007,2,10.00007,YES,NO,NO,0,0,0,0,0,0
-1,19.99986,2,10.00007,YES,NO,NO,0,0,0,0,0,0
-1,29.99913,3,10.00007,YES,NO,NO,0,0,0,0,0,0
-1,39.99978,3,10.00007,YES,NO,NO,0,0,0,0,0,0
+Participant ID,Right Handed?,Rotating Targets?,Trial Number,Global Time,Target Number,Target Time,Weight Shift Success?,Hit Success?,Random Sequence?,X Coord of COP,Y Coord of COP,COP Total Path,Trial Score,Cumulative Score
+,YES,YES,1,10.00007,1,10.00007,YES,NO,YES,0,0,0,0,0
+,YES,YES,2,19.99986,5,10.00007,NO,NO,YES,0,0,0,0,0
+,YES,YES,3,29.99913,5,10.00007,NO,NO,YES,0,0,0,0,0
+,YES,YES,4,39.99978,6,10.00007,NO,NO,YES,0,0,0,0,0
+,YES,YES,5,50.00077,1,10.00007,YES,NO,YES,0,0,0,0,0
