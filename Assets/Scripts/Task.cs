@@ -99,6 +99,14 @@ public class Task : MonoBehaviour
     // score per trial
     private float trialScore = 0;
 
+    // The size of each target group. During a target group, the targets will be spawned
+    // either randomly or in a set sequence. 
+    private int targetGroupSize = 5;
+
+    // The current index of a target within a target grouping. When this reaches
+    // the size of the target grouping, the grouping will change.
+    private int curGroupNumber = 1;
+
     // cumulative score 
     private float cumulativeScore;
 
@@ -110,9 +118,9 @@ public class Task : MonoBehaviour
     private float COBdistance = 0;
 
     // current target index
-    private int targetIndex;
+    private int targetIndex = 0;
 
-    // is the trial random sequence?
+    // is the current target group a random sequence?
     private bool isRandomSequence = true;
 
     // data recording trials
@@ -190,6 +198,7 @@ public class Task : MonoBehaviour
         //Set up either the stationary target or the rotating target
         rend = SetUpTargetsAndRenderer();
 
+        chooseTrialType();
         chooseNextTarget();
         placeTarget();
 
@@ -390,10 +399,11 @@ public class Task : MonoBehaviour
     /// <param name="posn"> The current COB posn IN TERMS OF CM</param>
     private void ResetTarget(Vector2 posn)
     {
-        // update trial score and total score
+        // update trial score on canvas and update actual total score
         taskCanvas.UpdateTrialScoreText(trialScore);
         cumulativeScore = cumulativeScore + trialScore;
 
+        // Record the data for this trial
         if (OnRecordData != null)
         {
             // note: convert target index to a one-indexed value for data recording
@@ -402,17 +412,20 @@ public class Task : MonoBehaviour
                 posn, COBdistance, trialScore, cumulativeScore);
         }
 
-
-
         curTime = 0;
         trialScore = 0;
         COBdistance = 0;
         touched = false;
 
 
-        if (curTrial < numTrials)
+        if ((curGroupNumber < targetGroupSize) && (curTrial < numTrials))
         {
+            // Reset trial only. Same group, so same sequence.
             ResetTrial();
+        }
+        else if (curTrial < numTrials)
+        {
+            ResetTrialAndGroup();
         }
         // task is over
         else
@@ -424,15 +437,31 @@ public class Task : MonoBehaviour
     }
 
     /// <summary>
-    /// After the specified number of targets per trial is up, reset trial parameters and move onto
+    /// After the trial is up, reset trial parameters and move onto
     /// the next trial.
     /// </summary>
     private void ResetTrial()
     {
-
+        curGroupNumber++;
         curTrial++;
         trialScore = 0;
 
+        chooseNextTarget();
+        placeTarget();
+    }
+
+    /// <summary>
+    /// After the trial is up, reset it. Also reset the group
+    /// and choose a new kind of sequence for the next target
+    /// group.
+    /// </summary>
+    private void ResetTrialAndGroup()
+    {
+        curGroupNumber = 0;
+        curTrial++;
+        trialScore = 0;
+
+        chooseTrialType();
         chooseNextTarget();
         placeTarget();
     }
@@ -462,11 +491,25 @@ public class Task : MonoBehaviour
     }
 
     /// <summary>
-    /// Choose the next target randomly
+    /// Choose the next target either randomly or within the sequence
     /// </summary>
     private void chooseNextTarget()
     {
-        targetIndex = rand.Next(6);        
+        if (isRandomSequence)
+        {
+            int prevTargetIndex = targetIndex;
+            // Keep looking for a random target index that is different
+            // from the previous targetIndex (We don't want the same
+            // target to appear twice in a row).
+            while (prevTargetIndex == targetIndex)
+            {
+                targetIndex = rand.Next(6);
+            }
+        }
+        else
+        {
+            targetIndex = (targetIndex + 1) % targets.Length;
+        }
     }
 
     /// <summary>
