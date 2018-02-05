@@ -14,7 +14,7 @@ public class ManusVibrate : MonoBehaviour {
 
     public void VibrateSoftLeft()
     {
-        Manus.ManusSetVibration(handData.Session, device_type_t.GLOVE_LEFT, 0.8f, 150);
+        Manus.ManusSetVibration(handData.Session, device_type_t.GLOVE_LEFT, 0.9f, 150);
     }
 
     public void VibrateVerySoftRight()
@@ -24,6 +24,6 @@ public class ManusVibrate : MonoBehaviour {
 
     public void VibrateVerySoftLeft()
     {
-        Manus.ManusSetVibration(handData.Session, device_type_t.GLOVE_LEFT, 0.5f, 300);
+        Manus.ManusSetVibration(handData.Session, device_type_t.GLOVE_LEFT, 0.6f, 300);
     }
 }
