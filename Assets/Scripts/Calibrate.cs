@@ -166,8 +166,11 @@ public class Calibrate : MonoBehaviour {
         GlobalControl.Instance.maxRightReach = this.rightReach;
     }
 
-    // Capture the arm length and shoulder height for calibration. Called using hair 
-    // trigger on Vive or mouse up.
+    /// <summary>
+    /// Captures the user's arm length and shoulder height when
+    /// the user is holding their hand straight out forward.
+    /// Called using mouse up.
+    /// </summary>
     public void CaptureArmLengthShoulderHeight()
     {
         if (rightHand.activeInHierarchy)

@@ -8,6 +8,8 @@ public class GlobalControl : MonoBehaviour {
     public float forwardCal, backwardsCal, leftCal, rightCal, armLength, shoulderHeight, 
         maxLeftReach, maxRightReach;
 
+    public int numSequences = 5;
+
     // if this is true, the targets are rotating
     public bool isRotation = true;
 

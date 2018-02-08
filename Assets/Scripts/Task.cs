@@ -91,7 +91,7 @@ public class Task : MonoBehaviour
     private float curTime = 0f;
 
     // number of trials
-    private const int numTrials = 20;
+    private int numTrials;
 
     // current trial number
     private int curTrial = 1;
@@ -152,6 +152,10 @@ public class Task : MonoBehaviour
     /// </summary>
     void Start()
     {
+        // The number of trials is the size of each group (sequence) times
+        // the number of sequences. The number of sequences was decided
+        // in the UI in the Menu scene. 
+        numTrials = targetGroupSize * GlobalControl.Instance.numSequences;
 
         // calculate weightshitft as per PE and 2D VE
         dim = 6f;
@@ -177,9 +181,9 @@ public class Task : MonoBehaviour
         // calculations for 3D posns
         float max, mid, min, xposLeft, xposRight, depth;
 
-        max = shoulderHeight * 1.3f;
+        max = shoulderHeight * 1.25f;
         mid = shoulderHeight;
-        min = shoulderHeight * 0.7f;
+        min = shoulderHeight * 0.75f;
 
         xposLeft = maxReachLeft * 0.8f + midTargetOffset;
 

@@ -42,6 +42,17 @@ public class MenuController : MonoBehaviour {
     }
 
     /// <summary>
+    /// Records an integer indicating how many sequences of 5 targets are going to 
+    /// appear in the task.
+    /// </summary>
+    /// <param name="arg0"></param>The entered integer
+    public void RecordSequenceNum(string arg0)
+    {
+        int intAnswer = int.Parse(arg0);
+        GlobalControl.Instance.numSequences = intAnswer;
+    }
+
+    /// <summary>
     /// Sets bool value that determines if targets are stationary or rotating.
     /// </summary>
     /// <param name="rotating"></param>
