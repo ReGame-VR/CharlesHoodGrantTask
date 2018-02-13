@@ -434,6 +434,7 @@ public class Task : MonoBehaviour
         // task is over
         else
         {
+            TriggerGameOverParticles();
             taskCanvas.UpdateTotalScoreText(cumulativeScore);
             taskCanvas.EnableGameOverText();
             gameOver = true;
@@ -645,6 +646,23 @@ public class Task : MonoBehaviour
         else
         {
             spawner.SpawnFailParticles(target.transform.position);
+        }
+    }
+
+    /// <summary>
+    /// Triggers the spawning of game over particles on the attached particle spawner
+    /// </summary>
+    private void TriggerGameOverParticles()
+    {
+        ParticleSpawner spawner = GetComponent<ParticleSpawner>();
+
+        if (GlobalControl.Instance.isRotation)
+        {
+            spawner.SpawnGameOverParticles(rotationObj.transform.GetChild(0).position);
+        }
+        else
+        {
+            spawner.SpawnGameOverParticles(target.transform.position);
         }
     }
 }
