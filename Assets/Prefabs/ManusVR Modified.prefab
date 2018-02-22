@@ -3372,7 +3372,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Manus\u2022VR"
+  m_Text: '
+
+'
 --- !u!114 &114740626701528998
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3428,7 +3430,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Manus\u2022VR"
+  m_Text: '
+
+'
 --- !u!114 &114993296591463320
 MonoBehaviour:
   m_ObjectHideFlags: 1

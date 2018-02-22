@@ -185,9 +185,9 @@ public class Task : MonoBehaviour
         mid = shoulderHeight;
         min = shoulderHeight * 0.75f;
 
-        xposLeft = maxReachLeft * 0.8f + midTargetOffset;
+        xposLeft = maxReachLeft + midTargetOffset;
 
-        xposRight = maxReachRight * 0.8f - midTargetOffset;
+        xposRight = maxReachRight - midTargetOffset;
 
         depth = cameraRig.transform.position.z + armLen; // armLen * 0.8f ?
 
