@@ -18,11 +18,8 @@ public class Task : MonoBehaviour
     public static DataRecording OnRecordData;
 
     // The delegate that invokes recording of continuous values like CoP and CoM
-    public delegate void ContinuousDataRecording(string participantId, bool rightHanded,
-            bool isRotation, int trialNum, float time, int targetNum, float targetTime,
-            bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
-            Vector2 weightPosn, float COPTotalPath, float trialScore,
-            float cumulativeScore);
+    public delegate void ContinuousDataRecording(string participantId, float time, Vector2 CoPposition, bool weightShiftSuccess,
+            Vector3 CoMposition, int targetNum, int trialNum);
 
     public static ContinuousDataRecording OnRecordContinuousData;
 
