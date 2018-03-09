@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class Task : MonoBehaviour
 {
-    // Event + Delegate for data recording
+    // The delegate that invokes recording of trial information
     public delegate void DataRecording(string participantId, bool rightHanded, 
             bool isRotation, int trialNum, float time, int targetNum, float targetTime,
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
@@ -16,6 +16,15 @@ public class Task : MonoBehaviour
             float cumulativeScore);
 
     public static DataRecording OnRecordData;
+
+    // The delegate that invokes recording of continuous values like CoP and CoM
+    public delegate void ContinuousDataRecording(string participantId, bool rightHanded,
+            bool isRotation, int trialNum, float time, int targetNum, float targetTime,
+            bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
+            Vector2 weightPosn, float COPTotalPath, float trialScore,
+            float cumulativeScore);
+
+    public static ContinuousDataRecording OnRecordContinuousData;
 
     // TODO:: change to short or tall if not doing custom ranges
     private float XMaxWeight = GlobalControl.Instance.rightCal;
@@ -124,7 +133,7 @@ public class Task : MonoBehaviour
     private bool isRandomSequence = true;
 
     // data recording trials
-    // what is this?
+    // global time
     private float time = 0f;
 
     // was the target touched?
