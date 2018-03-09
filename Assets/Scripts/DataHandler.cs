@@ -29,8 +29,6 @@ public class DataHandler : MonoBehaviour {
     {
         WriteTrialFile();
         WriteContinuousFile();
-
-        
     }
 
     /// <summary>
@@ -169,7 +167,7 @@ public class DataHandler : MonoBehaviour {
         // Write all entries in data list to file
         using (CsvFileWriter writer = new CsvFileWriter(@"Data/DataParticipantID" + GlobalControl.Instance.participantID + ".csv"))
         {
-            Debug.Log("Writing to file");
+            Debug.Log("Writing trial data to file");
             // write header
             CsvRow header = new CsvRow();
             header.Add("Participant ID");
@@ -257,6 +255,52 @@ public class DataHandler : MonoBehaviour {
     /// </summary>
     private void WriteContinuousFile()
     {
+        // Write all entries in data list to file
+        using (CsvFileWriter writer = new CsvFileWriter(@"Data/ContinuousCoPdata" + GlobalControl.Instance.participantID + ".csv"))
+        {
+            Debug.Log("Writing continuous data to file");
+            // write header
+            CsvRow header = new CsvRow();
+            header.Add("Participant ID");
+            header.Add("Global Time");
+            header.Add("CoP X");
+            header.Add("CoP Y");
+            header.Add("Weight Shift Success?");
+            header.Add("CoM X");
+            header.Add("CoM Y");
+            header.Add("CoM Z");
+            header.Add("Target Number");
+            header.Add("Trial Number");
 
+            writer.WriteRow(header);
+
+            // write each line of data
+            foreach (ContinuousData d in continuousData)
+            {
+                CsvRow row = new CsvRow();
+
+                row.Add(d.participantId);
+                row.Add(d.time.ToString());
+                row.Add(d.CoPposition.x.ToString());
+                row.Add(d.CoPposition.y.ToString());
+                if (d.weightShiftSuccess)
+                {
+                    row.Add("YES");
+                }
+                else
+                {
+                    row.Add("NO");
+                }
+                row.Add(d.CoMposition.x.ToString());
+                row.Add(d.CoMposition.y.ToString());
+                row.Add(d.CoMposition.z.ToString());
+                row.Add(d.targetNum.ToString());
+                row.Add(d.trialNum.ToString());
+
+                writer.WriteRow(row);
+            }
+        }
+
+        Task.OnRecordContinuousData -= recordContinuousTrial;
     }
 }

@@ -229,7 +229,7 @@ public class Task : MonoBehaviour
             target.SetActive(false);
             if (Input.GetKeyUp(KeyCode.Space))
             {
-                SceneManager.LoadScene("Task");
+                SceneManager.LoadScene("Menu");
             }
             else
             {
@@ -248,6 +248,8 @@ public class Task : MonoBehaviour
 
         // for data recording total distance of weight shift per target
         calculateDistances(posn);
+
+        UpdateContinuousData(posn);
 
         // check to see if color of target should change
         checkPosn(posn);
@@ -669,6 +671,21 @@ public class Task : MonoBehaviour
         else
         {
             spawner.SpawnGameOverParticles(target.transform.position);
+        }
+    }
+
+    /// <summary>
+    /// Update the DataHandler data for the continuous CoP and CoM tracking
+    /// </summary>
+    /// <param name="posn"></param>
+    private void UpdateContinuousData(Vector2 posn)
+    {
+        // Record the continuous data like CoP and CoM
+        if (OnRecordContinuousData != null)
+        {
+            // note: convert target index to a one-indexed value for data recording
+            OnRecordContinuousData(participantId, time, posn,
+                (targets[targetIndex].indication == Target.posnIndicator.GREEN), new Vector3(0, 0, 0), targetIndex + 1, curTrial);
         }
     }
 }
