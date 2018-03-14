@@ -31,8 +31,6 @@ public class Target {
     }
 
     /// <summary>
-    /// Written by Caroline
-    /// 
     /// Returns the score based on the 2D point IN RELATION TO THE CENTER OF THE TARGET
     /// and the time it was hit. Must translate from Unity units (meters) to pixels due
     /// to physical environment.
@@ -53,8 +51,6 @@ public class Target {
     }
 
     /// <summary>
-    /// Written by Murray
-    /// 
     /// Finds the score of a target touch based on the distance
     /// from the center of the target and the current time.
     /// accuracy on a scale from 1-10. Higher accuracy means closer to center.

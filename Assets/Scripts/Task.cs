@@ -13,12 +13,12 @@ public class Task : MonoBehaviour
             bool isRotation, int trialNum, float time, int targetNum, float targetTime,
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
             Vector2 weightPosn, float COPTotalPath, float trialScore,
-            float cumulativeScore);
+            float cumulativeScore, float curGreenTime, float curYellowTime, float curRedTime);
 
     public static DataRecording OnRecordData;
 
     // The delegate that invokes recording of continuous values like CoP and CoM
-    public delegate void ContinuousDataRecording(string participantId, float time, Vector2 CoPposition, bool weightShiftSuccess,
+    public delegate void ContinuousDataRecording(string participantId, float time, Vector2 CoPposition, Target.posnIndicator curColor,
             Vector3 CoMposition, int targetNum, int trialNum);
 
     public static ContinuousDataRecording OnRecordContinuousData;
@@ -95,6 +95,12 @@ public class Task : MonoBehaviour
 
     // current time of current target
     private float curTime = 0f;
+
+    // current Time that the player spent in green, yellow, and red positions
+    // for the current target
+    private float curGreenTime = 0f;
+    private float curYellowTime = 0f;
+    private float curRedTime = 0f;
 
     // number of trials
     private int numTrials;
@@ -195,7 +201,7 @@ public class Task : MonoBehaviour
 
         xposRight = maxReachRight - midTargetOffset;
 
-        depth = cameraRig.transform.position.z + armLen; // armLen * 0.8f ?
+        depth = cameraRig.transform.position.z + armLen * 1.1f; // armLen * 0.8f ?
 
         // create the targets
         targets[0] = new Target(new Vector3(xposLeft, min, depth), e);
@@ -421,10 +427,13 @@ public class Task : MonoBehaviour
             // note: convert target index to a one-indexed value for data recording
             OnRecordData(participantId, rightHanded, isRotation, curTrial, time, targetIndex + 1, curTime,
                 (targets[targetIndex].indication == Target.posnIndicator.GREEN), touched, isRandomSequence,
-                posn, COBdistance, trialScore, cumulativeScore);
+                posn, COBdistance, trialScore, cumulativeScore, curGreenTime, curYellowTime, curRedTime);
         }
 
         curTime = 0;
+        curGreenTime = 0f;
+        curYellowTime = 0f;
+        curRedTime = 0f;
         trialScore = 0;
         COBdistance = 0;
         touched = false;
@@ -680,12 +689,30 @@ public class Task : MonoBehaviour
     /// <param name="posn"></param>
     private void UpdateContinuousData(Vector2 posn)
     {
+        // The current color of the target
+        Target.posnIndicator curColor = targets[targetIndex].indication;
+        float delta = Time.deltaTime;
+
+        // Add the time that the user spent in the current target color
+        if (curColor == Target.posnIndicator.GREEN)
+        {
+            curGreenTime = curGreenTime + delta;
+        }
+        else if (curColor == Target.posnIndicator.YELLOW)
+        {
+            curYellowTime = curYellowTime + delta;
+        }
+        else
+        {
+            curRedTime = curRedTime + delta;
+        }
+
         // Record the continuous data like CoP and CoM
         if (OnRecordContinuousData != null)
         {
             // note: convert target index to a one-indexed value for data recording
             OnRecordContinuousData(participantId, time, posn,
-                (targets[targetIndex].indication == Target.posnIndicator.GREEN), new Vector3(0, 0, 0), targetIndex + 1, curTrial);
+                curColor, new Vector3(0, 0, 0), targetIndex + 1, curTrial);
         }
     }
 }

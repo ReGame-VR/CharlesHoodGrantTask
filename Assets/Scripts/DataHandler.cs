@@ -8,6 +8,20 @@ using ReadWriteCSV;
 /// </summary>
 public class DataHandler : MonoBehaviour {
 
+    // The interval of time before a touch that the post-processing algorithm uses.
+    // If this is two seconds, for example, the algorithm will analyze the two
+    // seconds preceding a target touch with greater detail.
+    private float precedingInterval = 2.0f;
+
+    private string pid = GlobalControl.Instance.participantID;
+
+    // Floats used in the calculation for preceding touch data. 
+    // These will increment depending on how long the person
+    // spent in the color during the interval preceding a target touch.
+    private float itemGreenTime = 0f;
+    private float itemYellowTime = 0f;
+    private float itemRedTime = 0f;
+
     // stores the data for writing to file at end of task
     List<Data> data = new List<Data>();
 
@@ -27,43 +41,28 @@ public class DataHandler : MonoBehaviour {
     /// </summary>
     void OnDisable()
     {
+        GeneratePostProcessingFile();
         WriteTrialFile();
         WriteContinuousFile();
     }
 
-    /// <summary>
-    /// Creates a new instance of the data class to store information to write to the data file 
-    /// at the end of the session. It is called when the trial over event fires.
-    /// </summary>
-    /// <param name="trialNum"> Which trial number this is </param>
-    /// <param name="time"> global time
-    /// <param name="targetNum"> the index of the target - one indexed for recording purposes</param>
-    /// <param name="targetTime"> Time it took to weight shift and touch target, or 10 seconds
-    ///                           if target was not successfully touched </param>
-    /// <param name="weightShiftSuccess"> did the user have weight shift success? </param>
-    /// <param name="buttonSuccess"> did the user successfully touch the target? </param>
-    /// <param name="isRandomSequence"> true if the trial is the set sequence, not random </param>
-    /// <param name="weightPosn"> the user's COB position at the end of the trial </param>
-    /// <param name="COPTotalPath"> the total distance, in cm, that the user's COB traveled </param>
-    /// <param name="targetScore"> score earned for this target only </param>
-    /// <param name="trialScore"> score earned for this trial so far </param>
-    /// <param name="cumulativeScore"> overall score earned so far </param>
+    // Records trial data
     private void recordTrial(string participantId, bool rightHanded, bool isRotation, int trialNum, 
             float time, int targetNum, float targetTime,
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
             Vector2 weightPosn, float COPTotalPath, float trialScore,
-            float cumulativeScore)
+            float cumulativeScore, float curGreenTime, float curYellowTime, float curRedTime)
     {
         data.Add(new Data(participantId, rightHanded, isRotation, trialNum, time,
             targetNum, targetTime, weightShiftSuccess, buttonSuccess,
-            isRandomSequence, weightPosn, COPTotalPath, trialScore, cumulativeScore));
+            isRandomSequence, weightPosn, COPTotalPath, trialScore, cumulativeScore, curGreenTime, curYellowTime, curRedTime));
     }
 
     // Records the continuous data like CoP and CoM to the list of data
-    private void recordContinuousTrial(string participantId, float time, Vector2 CoPposition, bool weightShiftSuccess,
+    private void recordContinuousTrial(string participantId, float time, Vector2 CoPposition, Target.posnIndicator curColor,
             Vector3 CoMposition, int targetNum, int trialNum)
     {
-        continuousData.Add(new ContinuousData(participantId, time, CoPposition, weightShiftSuccess, CoMposition, targetNum, trialNum));
+        continuousData.Add(new ContinuousData(participantId, time, CoPposition, curColor, CoMposition, targetNum, trialNum));
     }
 
     /// <summary>
@@ -88,29 +87,18 @@ public class DataHandler : MonoBehaviour {
         public readonly Vector2 weightPosn; // weight posn on balance board 
                                             // - when target hit OR when time runs out
         public readonly float COPTotalPath; // The total distance the user's COB traveled during the task
-        public readonly float trialScore; // the trial score, so far (a set of 5 target positions)
+        public readonly float trialScore; // the score of the target touch
         public readonly float cumulativeScore; // The total score for the session
 
-        /// <summary>
-        /// Constructs an instance of the Data class.
-        /// </summary>
-        /// <param name="trialNum"> The trial number </param>
-        /// <param name="time"> global time </param>
-        /// <param name="targetNum"> the index of the target, ONE INDEXED </param>
-        /// <param name="targetTime"> ime to activate target or 10 if not activated </param>
-        /// <param name="weightShiftSuccess"> did they successfully weight shift to correct location </param>
-        /// <param name="buttonSuccess"> did they activate the target while in the correct location? </param>
-        /// <param name="isRandomSequence"> is the target a random selection or a set sequence </param>
-        /// <param name="weightPosn"> the 2D posn of COB when target activated OR when time up </param>
-        /// <param name="COPTotalPath"> the distance in CM that the COB shifted during the target </param>
-        /// <param name="targetScore"> the score earned just from this target </param>
-        /// <param name="trialScore"> the score earned just in this trial (set of 5 targets) </param>
-        /// <param name="cumulativeScore"> the total score so far at the time data is submitted </param>
+        public readonly float curGreenTime; // the time spent in green for current target
+        public readonly float curYellowTime; // ''' yellow ''''
+        public readonly float curRedTime; // '''' red ''''
+
         public Data(string participantId, bool rightHanded, bool isRotation, int trialNum, 
             float time, int targetNum, float targetTime, 
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence, 
             Vector2 weightPosn, float COPTotalPath, float trialScore,
-            float cumulativeScore)
+            float cumulativeScore, float curGreenTime, float curYellowTime, float curRedTime)
         {
             this.participantId = participantId;
             this.rightHanded = rightHanded;
@@ -127,6 +115,10 @@ public class DataHandler : MonoBehaviour {
             this.COPTotalPath = COPTotalPath;
             this.trialScore = trialScore;
             this.cumulativeScore = cumulativeScore;
+
+            this.curGreenTime = curGreenTime;
+            this.curYellowTime = curYellowTime;
+            this.curRedTime = curRedTime;
         }
     }
 
@@ -141,18 +133,18 @@ public class DataHandler : MonoBehaviour {
         public readonly string participantId;
         public readonly float time; // global time
         public readonly Vector2 CoPposition; // current CoP position
-        public readonly bool weightShiftSuccess; // is the CoP in the CoP target area?
+        public readonly Target.posnIndicator curColor; // What is the current color of the target?
         public readonly Vector3 CoMposition; // current CoM position
         public readonly int targetNum; // current target number (one-indexed)
         public readonly int trialNum; // current trial number
 
-        public ContinuousData(string participantId, float time, Vector2 CoPposition, bool weightShiftSuccess,
+        public ContinuousData(string participantId, float time, Vector2 CoPposition, Target.posnIndicator curColor,
             Vector3 CoMposition, int targetNum, int trialNum)
         {
             this.participantId = participantId;
             this.time = time;
             this.CoPposition = CoPposition;
-            this.weightShiftSuccess = weightShiftSuccess;
+            this.curColor = curColor;
             this.CoMposition = CoMposition;
             this.targetNum = targetNum;
             this.trialNum = trialNum;
@@ -165,7 +157,7 @@ public class DataHandler : MonoBehaviour {
     private void WriteTrialFile()
     {
         // Write all entries in data list to file
-        using (CsvFileWriter writer = new CsvFileWriter(@"Data/DataParticipantID" + GlobalControl.Instance.participantID + ".csv"))
+        using (CsvFileWriter writer = new CsvFileWriter(@"Data/TrialData" + pid + ".csv"))
         {
             Debug.Log("Writing trial data to file");
             // write header
@@ -185,6 +177,9 @@ public class DataHandler : MonoBehaviour {
             header.Add("COP Total Path");
             header.Add("Trial Score");
             header.Add("Cumulative Score");
+            header.Add("Green Time");
+            header.Add("Yellow Time");
+            header.Add("Red Time");
             writer.WriteRow(header);
 
             // write each line of data
@@ -242,6 +237,9 @@ public class DataHandler : MonoBehaviour {
                 row.Add(d.COPTotalPath.ToString());
                 row.Add(d.trialScore.ToString());
                 row.Add(d.cumulativeScore.ToString());
+                row.Add(d.curGreenTime.ToString());
+                row.Add(d.curYellowTime.ToString());
+                row.Add(d.curRedTime.ToString());
                 writer.WriteRow(row);
             }
         }
@@ -256,7 +254,7 @@ public class DataHandler : MonoBehaviour {
     private void WriteContinuousFile()
     {
         // Write all entries in data list to file
-        using (CsvFileWriter writer = new CsvFileWriter(@"Data/ContinuousCoPdata" + GlobalControl.Instance.participantID + ".csv"))
+        using (CsvFileWriter writer = new CsvFileWriter(@"Data/ContinuousData" + pid + ".csv"))
         {
             Debug.Log("Writing continuous data to file");
             // write header
@@ -265,7 +263,7 @@ public class DataHandler : MonoBehaviour {
             header.Add("Global Time");
             header.Add("CoP X");
             header.Add("CoP Y");
-            header.Add("Weight Shift Success?");
+            header.Add("Current Color");
             header.Add("CoM X");
             header.Add("CoM Y");
             header.Add("CoM Z");
@@ -283,13 +281,17 @@ public class DataHandler : MonoBehaviour {
                 row.Add(d.time.ToString());
                 row.Add(d.CoPposition.x.ToString());
                 row.Add(d.CoPposition.y.ToString());
-                if (d.weightShiftSuccess)
+                if (d.curColor == Target.posnIndicator.GREEN)
                 {
-                    row.Add("YES");
+                    row.Add("GREEN");
+                }
+                else if (d.curColor == Target.posnIndicator.YELLOW)
+                {
+                    row.Add("YELLOW");
                 }
                 else
                 {
-                    row.Add("NO");
+                    row.Add("RED");
                 }
                 row.Add(d.CoMposition.x.ToString());
                 row.Add(d.CoMposition.y.ToString());
@@ -302,5 +304,142 @@ public class DataHandler : MonoBehaviour {
         }
 
         Task.OnRecordContinuousData -= recordContinuousTrial;
+    }
+
+    /// <summary>
+    /// A class that stores a line of the data collected during
+    /// post-processing. This includes information such as the
+    /// amount of time spent in each color 2 seconds before the
+    /// player touched the target.
+    /// </summary>
+    class PostProcessingData
+    {
+        public readonly string participantId;
+        public readonly int trialNum;
+        public readonly float precedingGreenTime;
+        public readonly float precedingYellowTime;
+        public readonly float precedingRedTime;
+
+        public PostProcessingData(string participantId, int trialNum, float precedingGreenTime,
+            float precedingYellowTime, float precedingRedTime)
+        {
+            this.participantId = participantId;
+            this.trialNum = trialNum;
+            this.precedingGreenTime = precedingGreenTime;
+            this.precedingYellowTime = precedingYellowTime;
+            this.precedingRedTime = precedingRedTime;
+        }
+    }
+
+    /// <summary>
+    /// First, create the proper list of post processing data. Then, write to file.
+    /// </summary>
+    private void GeneratePostProcessingFile()
+    {
+        List<PostProcessingData> postProcessingData = CalculatePostProcessingData();
+        WritePostProcessingFile(postProcessingData);
+    }
+
+    /// <summary>
+    /// Writes the post processing data to a file.
+    /// </summary>
+    /// <param name="ppData"></param>The post processing data to write to file.
+    private void WritePostProcessingFile(List<PostProcessingData> ppData)
+    {
+        // Write all entries in data list to file
+
+        using (CsvFileWriter writer = new CsvFileWriter(@"Data/PostProcessingData" + pid + ".csv"))
+        {
+            Debug.Log("Writing post-processing data to file");
+            // write header
+            CsvRow header = new CsvRow();
+            header.Add("Participant ID");
+            header.Add("Trial Number");
+            header.Add("Preceding Green Time");
+            header.Add("Preceding Yellow Time");
+            header.Add("Preceding Red Time");
+            writer.WriteRow(header);
+
+            // write each line of data
+            foreach (PostProcessingData d in ppData)
+            {
+                CsvRow row = new CsvRow();
+
+                row.Add(d.participantId);
+                row.Add(d.trialNum.ToString());
+                row.Add(d.precedingGreenTime.ToString());
+                row.Add(d.precedingYellowTime.ToString());
+                row.Add(d.precedingRedTime.ToString());
+
+                writer.WriteRow(row);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Calculates the list of post processing data to be written
+    /// </summary>
+    /// <returns></returns> The list of rows of postprocessing data to write
+    private List<PostProcessingData> CalculatePostProcessingData()
+    {
+        //continuousdata = List<ContinuousData>
+        List<PostProcessingData> result = new List<PostProcessingData>();
+
+        foreach (Data d in data)
+        {
+            int itemTrialNum = d.trialNum;
+            // The time that the target was hit this trial
+            float touchTime = d.time;
+            // The time that the target was hit in the previous trial
+            float prevTouchTime = 0f;
+            itemGreenTime = 0f;
+            itemYellowTime = 0f;
+            itemRedTime = 0f;
+
+            IncrementPrecedingTimes(touchTime, prevTouchTime);
+
+            PostProcessingData resultItem = new PostProcessingData(pid, itemTrialNum,
+                itemGreenTime, itemYellowTime, itemRedTime);
+            result.Add(resultItem);
+
+            prevTouchTime = d.time;
+
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Increments the preceding Color times to reflect how long 
+    /// the player spent in each color during the preceding interval of this specific trial
+    /// </summary>
+    /// <param name="touchTime"></param> The time that the target was touched for this trial
+    /// <param name="prevTouchTime"></param> The time that the target was touched for the previous trial
+    private void IncrementPrecedingTimes(float touchTime, float prevTouchTime)
+    {
+        float previousFrameTime = 0f;
+
+        foreach (ContinuousData d in continuousData)
+        {
+            // Look at the defined window preceding target touch
+            if ((d.time <= touchTime) && (d.time > (touchTime - precedingInterval)) && (d.time > prevTouchTime))
+            {
+                if (d.curColor == Target.posnIndicator.GREEN)
+                {
+                    // Increment the green time by the difference in time between the previous frames
+                    itemGreenTime = itemGreenTime + (d.time - previousFrameTime);
+                }
+                else if (d.curColor == Target.posnIndicator.YELLOW)
+                {
+                    itemYellowTime = itemYellowTime + (d.time - previousFrameTime);
+                }
+                else
+                {
+                    itemRedTime = itemRedTime + (d.time - previousFrameTime);
+                }
+            }
+
+            previousFrameTime = d.time;
+        }
     }
 }
