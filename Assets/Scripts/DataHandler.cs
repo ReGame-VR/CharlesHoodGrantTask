@@ -41,8 +41,8 @@ public class DataHandler : MonoBehaviour {
     /// </summary>
     void OnDisable()
     {
-        GeneratePostProcessingFile();
-        WriteTrialFile();
+        List<PostProcessingData> ppData = CalculatePostProcessingData();
+        WriteTrialFile(ppData);
         WriteContinuousFile();
     }
 
@@ -94,6 +94,10 @@ public class DataHandler : MonoBehaviour {
         public readonly float curYellowTime; // ''' yellow ''''
         public readonly float curRedTime; // '''' red ''''
 
+        public float precedingGreenTime; // the time spent in green for the 2 seconds preceding touch
+        public float precedingYellowTime; // ''' yellow ''''
+        public float precedingRedTime; // '''' red ''''
+
         public Data(string participantId, bool rightHanded, bool isRotation, int trialNum, 
             float time, int targetNum, float targetTime, 
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence, 
@@ -119,6 +123,21 @@ public class DataHandler : MonoBehaviour {
             this.curGreenTime = curGreenTime;
             this.curYellowTime = curYellowTime;
             this.curRedTime = curRedTime;
+
+            // These values are not assigned in the constructor because
+            // the data must be analyzed before they can be calculated.
+            this.precedingGreenTime = 0f;
+            this.precedingYellowTime = 0f;
+            this.precedingRedTime = 0f;
+
+        }
+
+        // Add the calculated preceding times to the trial data
+        public void AddPrecedingTimes(float precedingGreen, float precedingYellow, float precedingRed)
+        {
+            this.precedingGreenTime = precedingGreen;
+            this.precedingYellowTime = precedingYellow;
+            this.precedingRedTime = precedingRed;
         }
     }
 
@@ -154,8 +173,11 @@ public class DataHandler : MonoBehaviour {
     /// <summary>
     /// Writes the Trial File to a CSV
     /// </summary>
-    private void WriteTrialFile()
+    private void WriteTrialFile(List<PostProcessingData> ppData)
     {
+
+        AddPostProcessingToTrialData(ppData);
+        
         // Write all entries in data list to file
         using (CsvFileWriter writer = new CsvFileWriter(@"Data/TrialData" + pid + ".csv"))
         {
@@ -180,6 +202,10 @@ public class DataHandler : MonoBehaviour {
             header.Add("Green Time");
             header.Add("Yellow Time");
             header.Add("Red Time");
+
+            header.Add("Preceding Green Time");
+            header.Add("Preceding Yellow Time");
+            header.Add("Preceding Red Time");
             writer.WriteRow(header);
 
             // write each line of data
@@ -240,6 +266,11 @@ public class DataHandler : MonoBehaviour {
                 row.Add(d.curGreenTime.ToString());
                 row.Add(d.curYellowTime.ToString());
                 row.Add(d.curRedTime.ToString());
+
+                row.Add(d.precedingGreenTime.ToString());
+                row.Add(d.precedingYellowTime.ToString());
+                row.Add(d.precedingRedTime.ToString());
+
                 writer.WriteRow(row);
             }
         }
@@ -314,65 +345,16 @@ public class DataHandler : MonoBehaviour {
     /// </summary>
     class PostProcessingData
     {
-        public readonly string participantId;
-        public readonly int trialNum;
         public readonly float precedingGreenTime;
         public readonly float precedingYellowTime;
         public readonly float precedingRedTime;
 
-        public PostProcessingData(string participantId, int trialNum, float precedingGreenTime,
+        public PostProcessingData(float precedingGreenTime,
             float precedingYellowTime, float precedingRedTime)
         {
-            this.participantId = participantId;
-            this.trialNum = trialNum;
             this.precedingGreenTime = precedingGreenTime;
             this.precedingYellowTime = precedingYellowTime;
             this.precedingRedTime = precedingRedTime;
-        }
-    }
-
-    /// <summary>
-    /// First, create the proper list of post processing data. Then, write to file.
-    /// </summary>
-    private void GeneratePostProcessingFile()
-    {
-        List<PostProcessingData> postProcessingData = CalculatePostProcessingData();
-        WritePostProcessingFile(postProcessingData);
-    }
-
-    /// <summary>
-    /// Writes the post processing data to a file.
-    /// </summary>
-    /// <param name="ppData"></param>The post processing data to write to file.
-    private void WritePostProcessingFile(List<PostProcessingData> ppData)
-    {
-        // Write all entries in data list to file
-
-        using (CsvFileWriter writer = new CsvFileWriter(@"Data/PostProcessingData" + pid + ".csv"))
-        {
-            Debug.Log("Writing post-processing data to file");
-            // write header
-            CsvRow header = new CsvRow();
-            header.Add("Participant ID");
-            header.Add("Trial Number");
-            header.Add("Preceding Green Time");
-            header.Add("Preceding Yellow Time");
-            header.Add("Preceding Red Time");
-            writer.WriteRow(header);
-
-            // write each line of data
-            foreach (PostProcessingData d in ppData)
-            {
-                CsvRow row = new CsvRow();
-
-                row.Add(d.participantId);
-                row.Add(d.trialNum.ToString());
-                row.Add(d.precedingGreenTime.ToString());
-                row.Add(d.precedingYellowTime.ToString());
-                row.Add(d.precedingRedTime.ToString());
-
-                writer.WriteRow(row);
-            }
         }
     }
 
@@ -382,24 +364,23 @@ public class DataHandler : MonoBehaviour {
     /// <returns></returns> The list of rows of postprocessing data to write
     private List<PostProcessingData> CalculatePostProcessingData()
     {
-        //continuousdata = List<ContinuousData>
         List<PostProcessingData> result = new List<PostProcessingData>();
 
+        // The time that the target was hit in the previous trial
+        float prevTouchTime = 0f;
+
         foreach (Data d in data)
-        {
-            int itemTrialNum = d.trialNum;
+        {        
             // The time that the target was hit this trial
             float touchTime = d.time;
-            // The time that the target was hit in the previous trial
-            float prevTouchTime = 0f;
+            
             itemGreenTime = 0f;
             itemYellowTime = 0f;
             itemRedTime = 0f;
 
             IncrementPrecedingTimes(touchTime, prevTouchTime);
 
-            PostProcessingData resultItem = new PostProcessingData(pid, itemTrialNum,
-                itemGreenTime, itemYellowTime, itemRedTime);
+            PostProcessingData resultItem = new PostProcessingData(itemGreenTime, itemYellowTime, itemRedTime);
             result.Add(resultItem);
 
             prevTouchTime = d.time;
@@ -440,6 +421,19 @@ public class DataHandler : MonoBehaviour {
             }
 
             previousFrameTime = d.time;
+        }
+    }
+
+    /// <summary>
+    /// Adds the post processing data for preceding color touching to the trial data
+    /// </summary>
+    /// <param name="ppData"></param> the post processing info to add to trial data
+    private void AddPostProcessingToTrialData(List<PostProcessingData> ppData)
+    {
+        for (int i = 0; i < data.Count; i++)
+        {
+            PostProcessingData cur = ppData[i];
+            data[i].AddPrecedingTimes(cur.precedingGreenTime, cur.precedingYellowTime, cur.precedingRedTime);
         }
     }
 }
