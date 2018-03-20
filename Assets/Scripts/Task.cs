@@ -71,12 +71,13 @@ public class Task : MonoBehaviour
     public GameObject rotationObj;
 
     // The left controller 
-    //TODO: replace with glove
     public GameObject leftController;
 
     // The right controller
-    //TODO: replace with glove
     public GameObject rightController;
+
+    // The tracker on the pelvis to track CoM
+    public GameObject pelvisTracker;
 
     // the 3 materials for the target
     public Material redMat;
@@ -301,7 +302,7 @@ public class Task : MonoBehaviour
                 // The player hit the target! Calculate score, play success sound,
                 // spawn success particles, give vibration feedback, reset target.
                 float distanceFromCenter = findPointDistanceFromCenter(hit.point);
-                trialScore = Target.ScoreTouch2(distanceFromCenter, curTime);
+                trialScore = Target.ScoreTouch3(distanceFromCenter, curTime);
                 touched = true;
                 GetComponent<SoundEffectPlayer>().PlaySuccessSound();
                 TriggerSuccessParticles();
@@ -712,7 +713,7 @@ public class Task : MonoBehaviour
         {
             // note: convert target index to a one-indexed value for data recording
             OnRecordContinuousData(participantId, time, posn,
-                curColor, new Vector3(0, 0, 0), targetIndex + 1, curTrial);
+                curColor, pelvisTracker.transform.position, targetIndex + 1, curTrial);
         }
     }
 }

@@ -41,8 +41,15 @@ public class DataHandler : MonoBehaviour {
     /// </summary>
     void OnDisable()
     {
+        // First, analyze the data to find interesting information 
+        // about the two seconds leading to target touch
         List<PostProcessingData> ppData = CalculatePostProcessingData();
+
+        // Next, write the trial data to file and add some of the info
+        // calculated in post-processing
         WriteTrialFile(ppData);
+
+        // Finally, write the file that displays continuous CoP/CoM
         WriteContinuousFile();
     }
 
@@ -178,102 +185,7 @@ public class DataHandler : MonoBehaviour {
 
         AddPostProcessingToTrialData(ppData);
         
-        // Write all entries in data list to file
-        using (CsvFileWriter writer = new CsvFileWriter(@"Data/TrialData" + pid + ".csv"))
-        {
-            Debug.Log("Writing trial data to file");
-            // write header
-            CsvRow header = new CsvRow();
-            header.Add("Participant ID");
-            header.Add("Right Handed?");
-            header.Add("Rotating Targets?");
-            header.Add("Trial Number");
-            header.Add("Global Time");
-            header.Add("Target Number");
-            header.Add("Target Time");
-            header.Add("Weight Shift Success?");
-            header.Add("Hit Success?");
-            header.Add("Random Sequence?");
-            header.Add("X Coord of COP");
-            header.Add("Y Coord of COP");
-            header.Add("COP Total Path");
-            header.Add("Trial Score");
-            header.Add("Cumulative Score");
-            header.Add("Green Time");
-            header.Add("Yellow Time");
-            header.Add("Red Time");
-
-            header.Add("Preceding Green Time");
-            header.Add("Preceding Yellow Time");
-            header.Add("Preceding Red Time");
-            writer.WriteRow(header);
-
-            // write each line of data
-            foreach (Data d in data)
-            {
-                CsvRow row = new CsvRow();
-
-                row.Add(d.participantId);
-                if (d.rightHanded)
-                {
-                    row.Add("YES");
-                }
-                else
-                {
-                    row.Add("NO");
-                }
-                if (d.isRotation)
-                {
-                    row.Add("YES");
-                }
-                else
-                {
-                    row.Add("NO");
-                }
-                row.Add(d.trialNum.ToString());
-                row.Add(d.time.ToString());
-                row.Add(d.targetNum.ToString());
-                row.Add(d.targetTime.ToString());
-                if (d.weightShiftSuccess)
-                {
-                    row.Add("YES");
-                }
-                else
-                {
-                    row.Add("NO");
-                }
-                if (d.buttonSuccess)
-                {
-                    row.Add("YES");
-                }
-                else
-                {
-                    row.Add("NO");
-                }
-                if (d.isRandomSequence)
-                {
-                    row.Add("YES");
-                }
-                else
-                {
-                    row.Add("NO");
-                }
-                row.Add(d.weightPosn.x.ToString());
-                row.Add(d.weightPosn.y.ToString());
-                row.Add(d.COPTotalPath.ToString());
-                row.Add(d.trialScore.ToString());
-                row.Add(d.cumulativeScore.ToString());
-                row.Add(d.curGreenTime.ToString());
-                row.Add(d.curYellowTime.ToString());
-                row.Add(d.curRedTime.ToString());
-
-                row.Add(d.precedingGreenTime.ToString());
-                row.Add(d.precedingYellowTime.ToString());
-                row.Add(d.precedingRedTime.ToString());
-
-                writer.WriteRow(row);
-            }
-        }
+        c
 
         Task.OnRecordData -= recordTrial;
 
@@ -432,6 +344,7 @@ public class DataHandler : MonoBehaviour {
     {
         for (int i = 0; i < data.Count; i++)
         {
+            // For each line of trial data, add the appropriate preceding color times
             PostProcessingData cur = ppData[i];
             data[i].AddPrecedingTimes(cur.precedingGreenTime, cur.precedingYellowTime, cur.precedingRedTime);
         }

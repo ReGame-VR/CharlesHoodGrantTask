@@ -68,4 +68,23 @@ public class Target {
 
         return speed + accuracy;
     }
+
+    /// <summary>
+    /// Finds the score of a target touch based on the distance
+    /// from the center of the target and the current time.
+    /// accuracy on a scale from 1-10. Higher accuracy means closer to center.
+    /// time remaining 1-10.
+    /// 
+    /// </summary>
+    /// <param name="distanceFromCenter"></param>distance from center of target
+    /// <param name="currTime"></param>current time in the trial
+    /// <returns></returns>
+    public static float ScoreTouch3(float distanceFromCenter, float currTime)
+    {
+        float speed = 10 - currTime;
+
+        float accuracy = Mathf.Abs((distanceFromCenter / 0.0440f) * 10 - 10);
+
+        return speed + accuracy;
+    }
 }
