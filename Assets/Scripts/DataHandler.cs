@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using ReadWriteCSV;
+using System.IO;
 
 /// <summary>
 /// Writes a line of data after every trial, giving information on the trial.
@@ -186,7 +187,8 @@ public class DataHandler : MonoBehaviour {
         AddPostProcessingToTrialData(ppData);
 
         // Write all entries in data list to file
-        using (CsvFileWriter writer = new CsvFileWriter(@"Data/TrialData" + pid + ".csv"))
+        Directory.CreateDirectory(@"Data/" + pid);
+        using (CsvFileWriter writer = new CsvFileWriter(@"Data/" + pid + "/TrialData" + pid + ".csv"))
         {
             Debug.Log("Writing trial data to file");
             // write header
@@ -292,7 +294,8 @@ public class DataHandler : MonoBehaviour {
     private void WriteContinuousFile()
     {
         // Write all entries in data list to file
-        using (CsvFileWriter writer = new CsvFileWriter(@"Data/ContinuousData" + pid + ".csv"))
+        Directory.CreateDirectory(@"Data/" + pid);
+        using (CsvFileWriter writer = new CsvFileWriter(@"Data/" + pid + "/ContinuousData" + pid + ".csv"))
         {
             Debug.Log("Writing continuous data to file");
             // write header
