@@ -155,6 +155,12 @@ public class Task : MonoBehaviour
     // The canvas displaying score during the task
     private TaskCanvas taskCanvas;
 
+    // Whether or not the game has begun
+    private bool begun = false;
+
+    [SerializeField]
+    private IKRecording ikRecording;
+
     void Awake()
     {
         taskCanvas = GetComponent<TaskCanvas>();
@@ -212,15 +218,7 @@ public class Task : MonoBehaviour
         targets[4] = new Target(new Vector3(xposRight + midTargetOffset, mid, depth), d);
         targets[5] = new Target(new Vector3(xposRight, min, depth), f);
 
-        //Set up either the stationary target or the rotating target
-        rend = SetUpTargetsAndRenderer();
 
-        chooseTrialType();
-        chooseNextTarget();
-        placeTarget();
-
-        // get starting posn
-        lastPosn = CoPtoCM(Wii.GetCenterOfBalance(0));
     }
 
     /// <summary>
@@ -228,6 +226,27 @@ public class Task : MonoBehaviour
     /// </summary>
     void FixedUpdate()
     {
+        if (!begun)
+        {
+            if (Input.GetKeyUp(KeyCode.C))
+            {
+                begun = true;
+
+                //Set up either the stationary target or the rotating target
+                rend = SetUpTargetsAndRenderer();
+
+                chooseTrialType();
+                chooseNextTarget();
+                placeTarget();
+
+                // get starting posn
+                lastPosn = CoPtoCM(Wii.GetCenterOfBalance(0));
+            }
+            return;
+        }
+
+        ikRecording.AddJointData();
+
         if (gameOver)
         {
             // Game is over, make targets inactive and check
@@ -552,6 +571,13 @@ public class Task : MonoBehaviour
     /// <param name="userPosn"> the user's position on the Wii board. </param>
     private void checkPosn(Vector2 userPosn)
     {
+        // For prototype testing, make the target always green
+        if (GlobalControl.Instance.targetAlwaysGreen)
+        {
+            setColor(Target.posnIndicator.GREEN);
+            return;
+        }
+
         // indicator is green, user can touch target
         if ((userPosn.x <= targets[targetIndex].CoPTarget.x + halfdim)
             && (userPosn.x >= targets[targetIndex].CoPTarget.x - halfdim)

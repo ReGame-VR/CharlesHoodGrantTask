@@ -12,7 +12,8 @@ public class PEMeasuring : MonoBehaviour
     public GameObject hmd;
 
     // The tracked hand of the player
-    public GameObject hand;
+    public GameObject leftHand;
+    public GameObject rightHand;
 
     // Calibration values
     private float armLen, shoulderHeight, leftReachLocation, rightReachLocation, fullHeight;
@@ -42,8 +43,18 @@ public class PEMeasuring : MonoBehaviour
             CaptureArmLengthAndHeight();
         }
 
+        // Create a new empty vector for the position of the hand
+        Vector3 posn3;
+
         // - - - - SIDE REACH CALIBRATION - - - -
-        Vector3 posn3 = hand.transform.position;
+        if (GlobalControl.Instance.rightHanded)
+        {
+            posn3 = rightHand.transform.position;
+        }
+        else
+        {
+            posn3 = leftHand.transform.position;
+        }
 
 
         // check to see if it is a new maximum
@@ -62,6 +73,19 @@ public class PEMeasuring : MonoBehaviour
     // Capture the arm length and height for calibration. Called on mouse up.
     public void CaptureArmLengthAndHeight()
     {
+
+        GameObject hand;
+
+        if (GlobalControl.Instance.rightHanded)
+        {
+            hand = rightHand;
+        }
+        else
+        {
+            hand = leftHand;
+        }
+
+
         // Add 10cm (0.1f) to this value to compensate for depth of hmd
         armLen = Mathf.Abs(hand.transform.position.z - hmd.transform.position.z) + 0.1f;
         shoulderHeight = hand.transform.position.y;

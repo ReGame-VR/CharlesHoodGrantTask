@@ -71,6 +71,15 @@ public class MenuController : MonoBehaviour {
     }
 
     /// <summary>
+    /// Sets bool value that determines if the target is always green
+    /// </summary>
+    /// <param name="rotating"></param>
+    public void SetAlwaysGreen(bool alwaysGreen)
+    {
+        GlobalControl.Instance.targetAlwaysGreen = alwaysGreen;
+    }
+
+    /// <summary>
     /// Loads next scene if wii is connected and participant ID was entered.
     /// </summary>
     public void NextScene()
@@ -105,6 +114,8 @@ public class MenuController : MonoBehaviour {
         UnityEngine.XR.XRSettings.enabled = false;
         warning.gameObject.SetActive(false);
         // Debug.Log(Wii.GetRemoteCount());
+
+        GlobalControl.Instance.targetAlwaysGreen = false;
 	}
 
     /// <summary>

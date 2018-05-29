@@ -35,7 +35,6 @@ public class Calibrate : MonoBehaviour {
     public GameObject hmd;
 
     // Controller (left) and Controller(right) - give both, but only 1 will be active
-    // TODO: Replace with Manus Gloves
     public GameObject rightHand;
     public GameObject leftHand;
 
@@ -96,7 +95,7 @@ public class Calibrate : MonoBehaviour {
         Vector3 posn3;
 
         // get controller position
-        if (rightHand.activeInHierarchy)
+        if (GlobalControl.Instance.rightHanded)
         {
             posn3 = rightHand.transform.position;
         }
@@ -173,7 +172,7 @@ public class Calibrate : MonoBehaviour {
     /// </summary>
     public void CaptureArmLengthShoulderHeight()
     {
-        if (rightHand.activeInHierarchy)
+        if (GlobalControl.Instance.rightHanded)
         {
             armLen = Mathf.Abs(rightHand.transform.position.z - hmd.transform.position.z);
             shoulderHeight = rightHand.transform.position.y;

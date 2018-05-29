@@ -19,6 +19,11 @@ public class GlobalControl : MonoBehaviour {
     // participant ID to differentiate data files
     public string participantID;
 
+    // For prototype testing: 
+    // If this is true, the target is always
+    // green and can always be touched
+    public bool targetAlwaysGreen = false;
+
     // The single instance of this class
     public static GlobalControl Instance;
 
