@@ -13,7 +13,7 @@ public class Task : MonoBehaviour
             bool isRotation, int trialNum, float time, int targetNum, float targetTime,
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
             Vector2 weightPosn, float COPTotalPath, float trialScore,
-            float cumulativeScore, float curGreenTime, float curYellowTime, float curRedTime);
+            float cumulativeScore, float curGreenTime, float curYellowTime, float curRedTime, float reachDistance);
 
     public static DataRecording OnRecordData;
 
@@ -71,10 +71,10 @@ public class Task : MonoBehaviour
     public GameObject rotationObj;
 
     // The left controller 
-    public GameObject leftController;
+    public GameObject leftHand;
 
     // The right controller
-    public GameObject rightController;
+    public GameObject rightHand;
 
     // The tracker on the pelvis to track CoM
     public GameObject pelvisTracker;
@@ -158,6 +158,9 @@ public class Task : MonoBehaviour
     // Whether or not the game has begun
     private bool begun = false;
 
+    // The position of the hand tracker when the user's arms are by their side
+    private Vector3 handAtSidePosition;
+
     [SerializeField]
     private IKRecording ikRecording;
 
@@ -232,6 +235,9 @@ public class Task : MonoBehaviour
             {
                 begun = true;
 
+                // Calibrate where the hand is when the user isn't reaching
+                handAtSidePosition = GetCorrectHand().transform.position;
+
                 //Set up either the stationary target or the rotating target
                 rend = SetUpTargetsAndRenderer();
 
@@ -245,7 +251,7 @@ public class Task : MonoBehaviour
             return;
         }
 
-        ikRecording.AddJointData();
+        ikRecording.AddJointData(time);
 
         if (gameOver)
         {
@@ -447,7 +453,8 @@ public class Task : MonoBehaviour
             // note: convert target index to a one-indexed value for data recording
             OnRecordData(participantId, rightHanded, isRotation, curTrial, time, targetIndex + 1, curTime,
                 (targets[targetIndex].indication == Target.posnIndicator.GREEN), touched, isRandomSequence,
-                posn, COBdistance, trialScore, cumulativeScore, curGreenTime, curYellowTime, curRedTime);
+                posn, COBdistance, trialScore, cumulativeScore, curGreenTime, curYellowTime, curRedTime, 
+                Vector3.Distance(GetCorrectHand().transform.position, handAtSidePosition));
         }
 
         curTime = 0;
@@ -740,6 +747,19 @@ public class Task : MonoBehaviour
             // note: convert target index to a one-indexed value for data recording
             OnRecordContinuousData(participantId, time, posn,
                 curColor, pelvisTracker.transform.position, targetIndex + 1, curTrial);
+        }
+    }
+
+    // Gets the correct hand, either left or right
+    private GameObject GetCorrectHand()
+    {
+        if (rightHanded)
+        {
+            return rightHand;
+        }
+        else
+        {
+            return leftHand;
         }
     }
 }

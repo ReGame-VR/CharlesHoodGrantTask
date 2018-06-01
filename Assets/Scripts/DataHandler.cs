@@ -29,6 +29,9 @@ public class DataHandler : MonoBehaviour {
     // stores the continuous data (cop, com, etc) at end of task
     List<ContinuousData> continuousData = new List<ContinuousData>();
 
+    private float cumulativeAccuracyScore = 0f;
+    private float cumulativeTimeScore = 0f;
+
 	/// <summary>
     /// Subscribe to data writing events.
     /// </summary>
@@ -59,11 +62,18 @@ public class DataHandler : MonoBehaviour {
             float time, int targetNum, float targetTime,
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence,
             Vector2 weightPosn, float COPTotalPath, float trialScore,
-            float cumulativeScore, float curGreenTime, float curYellowTime, float curRedTime)
+            float cumulativeScore, float curGreenTime, float curYellowTime, float curRedTime, float reachDistance)
     {
+        float timeScore = 10 - targetTime;
+        float accuracyScore = trialScore - timeScore;
+        cumulativeAccuracyScore = cumulativeAccuracyScore + accuracyScore;
+        cumulativeTimeScore = cumulativeTimeScore + timeScore;
+
         data.Add(new Data(participantId, rightHanded, isRotation, trialNum, time,
             targetNum, targetTime, weightShiftSuccess, buttonSuccess,
-            isRandomSequence, weightPosn, COPTotalPath, trialScore, cumulativeScore, curGreenTime, curYellowTime, curRedTime));
+            isRandomSequence, weightPosn, COPTotalPath, trialScore, cumulativeScore, 
+            curGreenTime, curYellowTime, curRedTime, reachDistance, timeScore,
+            accuracyScore, cumulativeTimeScore, cumulativeAccuracyScore));
     }
 
     // Records the continuous data like CoP and CoM to the list of data
@@ -83,7 +93,6 @@ public class DataHandler : MonoBehaviour {
         public readonly string participantId;
         public readonly bool rightHanded;
         public readonly bool isRotation;
-
 
         public readonly int trialNum; // which trial it is
         public readonly float time; // global time
@@ -106,11 +115,18 @@ public class DataHandler : MonoBehaviour {
         public float precedingYellowTime; // ''' yellow ''''
         public float precedingRedTime; // '''' red ''''
 
+        public readonly float reachDistance;
+        public readonly float accuracyScore;
+        public readonly float timeScore;
+        public readonly float cumulativeAccuracyScore;
+        public readonly float cumulativeTimeScore;
+
         public Data(string participantId, bool rightHanded, bool isRotation, int trialNum, 
             float time, int targetNum, float targetTime, 
             bool weightShiftSuccess, bool buttonSuccess, bool isRandomSequence, 
             Vector2 weightPosn, float COPTotalPath, float trialScore,
-            float cumulativeScore, float curGreenTime, float curYellowTime, float curRedTime)
+            float cumulativeScore, float curGreenTime, float curYellowTime, float curRedTime,
+            float reachDistance, float timeScore, float accuracyScore, float cumulativeTimeScore, float cumulativeAccuracyScore)
         {
             this.participantId = participantId;
             this.rightHanded = rightHanded;
@@ -137,6 +153,12 @@ public class DataHandler : MonoBehaviour {
             this.precedingGreenTime = 0f;
             this.precedingYellowTime = 0f;
             this.precedingRedTime = 0f;
+
+            this.reachDistance = reachDistance;
+            this.timeScore = timeScore;
+            this.accuracyScore = accuracyScore;
+            this.cumulativeTimeScore = cumulativeTimeScore;
+            this.cumulativeAccuracyScore = cumulativeAccuracyScore;
 
         }
 
@@ -207,7 +229,16 @@ public class DataHandler : MonoBehaviour {
             header.Add("Y Coord of COP");
             header.Add("COP Total Path");
             header.Add("Trial Score");
+
+            header.Add("Accuracy Score");
+            header.Add("Time Score");
+            header.Add("Cumulative Accuracy Score");
+            header.Add("Cumulative Time Score");
+
             header.Add("Cumulative Score");
+
+            header.Add("Reach Distance");
+
             header.Add("Green Time");
             header.Add("Yellow Time");
             header.Add("Red Time");
@@ -271,7 +302,16 @@ public class DataHandler : MonoBehaviour {
                 row.Add(d.weightPosn.y.ToString());
                 row.Add(d.COPTotalPath.ToString());
                 row.Add(d.trialScore.ToString());
+
+                row.Add(d.accuracyScore.ToString());
+                row.Add(d.timeScore.ToString());
+                row.Add(d.cumulativeAccuracyScore.ToString());
+                row.Add(d.cumulativeTimeScore.ToString());
+
                 row.Add(d.cumulativeScore.ToString());
+
+                row.Add(d.reachDistance.ToString());
+
                 row.Add(d.curGreenTime.ToString());
                 row.Add(d.curYellowTime.ToString());
                 row.Add(d.curRedTime.ToString());

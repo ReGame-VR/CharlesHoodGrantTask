@@ -76,9 +76,9 @@ public class IKRecording : MonoBehaviour {
 
     // Adds a line of joint data to the growing list of joint data. This should be
     // called once per frame while a trial is active
-    public void AddJointData()
+    public void AddJointData(float time)
     {
-        data.Add(new JointData(Time.time, Head, Neck, SpineShoulder,
+        data.Add(new JointData(time, Head, Neck, SpineShoulder,
             SpineMid, SpineBase, RightShoulder,
             LeftShoulder, RightElbow, LeftElbow,
             RightWrist, LeftWrist, RightHand,
