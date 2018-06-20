@@ -192,11 +192,20 @@ public class Task : MonoBehaviour
 
         Vector2 a, b, c, d, e, f;
 
+        //OLD POSITIONS
         // create the 2d positions for the targets on the balance board
-        a = new Vector2(XMinWeight / 2, YMaxWeight - halfdim);
+        //a = new Vector2(XMinWeight / 2, YMaxWeight - halfdim);
+        //b = new Vector2(XMaxWeight - halfdim, YMaxWeight - halfdim);
+        //c = new Vector2(XMinWeight + halfdim, 0);
+        //d = new Vector2(2 + halfdim, 0);
+        //e = new Vector2(0 - halfdim, YMinWeight + halfdim);
+        //f = new Vector2((XMaxWeight - 2) - halfdim, YMinWeight + halfdim);
+
+        // create the 2d positions for the targets on the balance board
+        a = new Vector2(-1, YMaxWeight - halfdim);
         b = new Vector2(XMaxWeight - halfdim, YMaxWeight - halfdim);
-        c = new Vector2(XMinWeight + halfdim, 0);
-        d = new Vector2(2 + halfdim, 0);
+        c = new Vector2(XMinWeight + halfdim, -2);
+        d = new Vector2(2 - halfdim, 3);
         e = new Vector2(0 - halfdim, YMinWeight + halfdim);
         f = new Vector2((XMaxWeight - 2) - halfdim, YMinWeight + halfdim);
 

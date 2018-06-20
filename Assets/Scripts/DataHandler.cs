@@ -41,7 +41,7 @@ public class DataHandler : MonoBehaviour {
 	}
 
     /// <summary>
-    /// Write all data to a file and unsubscribe from data writing event.
+    /// Write all data to a file
     /// </summary>
     void OnDisable()
     {
@@ -216,7 +216,7 @@ public class DataHandler : MonoBehaviour {
             // write header
             CsvRow header = new CsvRow();
             header.Add("Participant ID");
-            header.Add("Right Handed?");
+            header.Add("Using right hand?");
             header.Add("Rotating Targets?");
             header.Add("Trial Number");
             header.Add("Global Time");

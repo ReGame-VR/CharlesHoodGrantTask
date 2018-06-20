@@ -67,6 +67,8 @@ public class PEMeasuring : MonoBehaviour
             leftReachLocation = posn3.x;
         }
 
+        Vector2 currentCoP = Task.CoPtoCM(Wii.GetCenterOfBalance(0));
+
 
     }
 
@@ -124,6 +126,11 @@ public class PEMeasuring : MonoBehaviour
             header.Add("Left Reach Distance (cm)");
             header.Add("Right Reach Distance (cm)");
             header.Add("Full Height (cm)");
+
+            header.Add("Forward COP Calibration");
+            header.Add("Backward COP Calibration");
+            header.Add("Left COP Calibration");
+            header.Add("Right COP Calibration");
             writer.WriteRow(header);
 
             // write row
@@ -133,6 +140,12 @@ public class PEMeasuring : MonoBehaviour
             row.Add((leftReachDistance * 100).ToString());
             row.Add((rightReachDistance * 100).ToString());
             row.Add((fullHeight * 100).ToString());
+
+            row.Add(GlobalControl.Instance.forwardCal.ToString());
+            row.Add(GlobalControl.Instance.backwardsCal.ToString());
+            row.Add(GlobalControl.Instance.leftCal.ToString());
+            row.Add(GlobalControl.Instance.rightCal.ToString());
+
             writer.WriteRow(row);
         }
     }
