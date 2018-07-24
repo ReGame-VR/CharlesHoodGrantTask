@@ -78,9 +78,9 @@ public class DataHandler : MonoBehaviour {
 
     // Records the continuous data like CoP and CoM to the list of data
     private void recordContinuousTrial(string participantId, float time, Vector2 CoPposition, Target.posnIndicator curColor,
-            Vector3 CoMposition, int targetNum, int trialNum)
+            Vector3 CoMposition, int targetNum, int trialNum, Vector2 CoPVelocity)
     {
-        continuousData.Add(new ContinuousData(participantId, time, CoPposition, curColor, CoMposition, targetNum, trialNum));
+        continuousData.Add(new ContinuousData(participantId, time, CoPposition, curColor, CoMposition, targetNum, trialNum, CoPVelocity));
     }
 
     /// <summary>
@@ -186,9 +186,10 @@ public class DataHandler : MonoBehaviour {
         public readonly Vector3 CoMposition; // current CoM position
         public readonly int targetNum; // current target number (one-indexed)
         public readonly int trialNum; // current trial number
+        public readonly Vector2 CoPVelocity; // current Velocity of the CoP
 
         public ContinuousData(string participantId, float time, Vector2 CoPposition, Target.posnIndicator curColor,
-            Vector3 CoMposition, int targetNum, int trialNum)
+            Vector3 CoMposition, int targetNum, int trialNum, Vector2 CoPVelocity)
         {
             this.participantId = participantId;
             this.time = time;
@@ -197,6 +198,7 @@ public class DataHandler : MonoBehaviour {
             this.CoMposition = CoMposition;
             this.targetNum = targetNum;
             this.trialNum = trialNum;
+            this.CoPVelocity = CoPVelocity;
         }
     }
 
@@ -350,6 +352,8 @@ public class DataHandler : MonoBehaviour {
             header.Add("CoM Z");
             header.Add("Target Number");
             header.Add("Trial Number");
+            header.Add("CoP Velocity X");
+            header.Add("CoP Velocity Y");
 
             writer.WriteRow(header);
 
@@ -379,6 +383,8 @@ public class DataHandler : MonoBehaviour {
                 row.Add(d.CoMposition.z.ToString());
                 row.Add(d.targetNum.ToString());
                 row.Add(d.trialNum.ToString());
+                row.Add(d.CoPVelocity.x.ToString());
+                row.Add(d.CoPVelocity.y.ToString());
 
                 writer.WriteRow(row);
             }

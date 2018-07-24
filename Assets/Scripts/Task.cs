@@ -19,7 +19,7 @@ public class Task : MonoBehaviour
 
     // The delegate that invokes recording of continuous values like CoP and CoM
     public delegate void ContinuousDataRecording(string participantId, float time, Vector2 CoPposition, Target.posnIndicator curColor,
-            Vector3 CoMposition, int targetNum, int trialNum);
+            Vector3 CoMposition, int targetNum, int trialNum, Vector2 CoPVelocity);
 
     public static ContinuousDataRecording OnRecordContinuousData;
 
@@ -129,6 +129,11 @@ public class Task : MonoBehaviour
     // for recording COB distance per target
     private Vector2 lastPosn;
     private float COBdistance = 0;
+
+    // for recording COP velocity: CoP in previous frame
+    private Vector2 previousCoP = new Vector2(0,0);
+    // Current CoP velocity
+    private Vector2 CoPVelocity;
 
     // current target index
     private int targetIndex = 0;
@@ -442,6 +447,8 @@ public class Task : MonoBehaviour
         COBdistance += Mathf.Sqrt(Mathf.Pow(posn.x - lastPosn.x, 2)
             + Mathf.Pow(posn.y - lastPosn.y, 2));
 
+
+
         lastPosn = posn;
     }
 
@@ -750,12 +757,16 @@ public class Task : MonoBehaviour
             curRedTime = curRedTime + delta;
         }
 
+        // Divide by 100 to convert from cm/s to m/s
+        CoPVelocity = new Vector2((posn.x - previousCoP.x) / delta, (posn.y - previousCoP.y) / delta) / 100f;
+        Debug.Log(CoPVelocity.ToString());
+
         // Record the continuous data like CoP and CoM
         if (OnRecordContinuousData != null)
         {
             // note: convert target index to a one-indexed value for data recording
             OnRecordContinuousData(participantId, time, posn,
-                curColor, pelvisTracker.transform.position, targetIndex + 1, curTrial);
+                curColor, pelvisTracker.transform.position, targetIndex + 1, curTrial, CoPVelocity);
         }
     }
 
