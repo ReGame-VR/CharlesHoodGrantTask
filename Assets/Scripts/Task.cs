@@ -759,7 +759,8 @@ public class Task : MonoBehaviour
 
         // Divide by 100 to convert from cm/s to m/s
         CoPVelocity = new Vector2((posn.x - previousCoP.x) / delta, (posn.y - previousCoP.y) / delta) / 100f;
-        Debug.Log(CoPVelocity.ToString());
+
+        previousCoP = posn;
 
         // Record the continuous data like CoP and CoM
         if (OnRecordContinuousData != null)
