@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.vivetest.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "C:\\Users\\Rehabilitation Games\\Desktop\\CharlesHoodGrantTask\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "ViveTest [Testing]"
+        }
+      }
+    }
+  ]
+}
