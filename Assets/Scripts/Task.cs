@@ -225,13 +225,29 @@ public class Task : MonoBehaviour
 
         xposRight = maxReachRight - midTargetOffset;
 
-        depth = cameraRig.transform.position.z + armLen * 1.2f; // armLen * 0.8f ?
+        //var leftRep = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //var rightRep = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //leftRep.transform.position = new Vector3(xposLeft, 0, 0);
+        //rightRep.transform.position = new Vector3(xposRight, 0, 0);
+        //leftRep.transform.localScale *= .4f;
+        //rightRep.transform.localScale *= .4f;
+
+        // Debug.Log("camera pos: " + head.transform.position.ToString("F4") + " and using arm length: " + armLen);
+
+        //depth = head.transform.position.z + (armLen * 1.2f); // armLen * 0.8f ?
+        //float maxDepth = head.transform.position.z + (armLen * .9f);
+        depth = cameraRig.transform.position.z + armLen *.85f; // (armLen * 1.2f); // armLen * 0.8f ?
+        float maxDepth = cameraRig.transform.position.z + (armLen * .45f);
+
+        //var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //cube.transform.position = new Vector3(head.transform.position.x, head.transform.position.y, head.transform.position.z + armLen);
+        //cube.transform.localScale *= .02f;
 
         // create the targets
         targets[0] = new Target(new Vector3(xposLeft, min, depth), e);
         targets[1] = new Target(new Vector3(xposLeft - midTargetOffset, mid, depth), c);
-        targets[2] = new Target(new Vector3(xposLeft, max, depth), a);
-        targets[3] = new Target(new Vector3(xposRight, max, depth), b);
+        targets[2] = new Target(new Vector3(xposLeft, max, maxDepth), a);
+        targets[3] = new Target(new Vector3(xposRight, max, maxDepth), b);
         targets[4] = new Target(new Vector3(xposRight + midTargetOffset, mid, depth), d);
         targets[5] = new Target(new Vector3(xposRight, min, depth), f);
 
@@ -306,12 +322,28 @@ public class Task : MonoBehaviour
             {
                 // Target is unlocked, check to see if player hit it
                 CheckCollisions(posn);
+                // CheckLockedCollisions(); // EW testing
+
             }
             else
             {
                 // Target is still locked, check to see if player touched
                 // it to give light haptic feedback
                 CheckLockedCollisions();
+            }
+
+            // EW testing
+            if (Input.GetKeyUp(KeyCode.T))
+            {
+                float distanceFromCenter = findPointDistanceFromCenter(Vector3.zero);
+                float targetScore = Target.ScoreTouch3(distanceFromCenter, curTime);
+                Debug.Log("got score for target: " + targetScore);
+                trialScore += targetScore;
+                touched = true;
+                GetComponent<SoundEffectPlayer>().PlaySuccessSound();
+                TriggerSuccessParticles();
+                VibrateActiveController();
+                ResetTarget(CoPtoCM(Wii.GetCenterOfBalance(0)));
             }
         }
         else
@@ -336,12 +368,13 @@ public class Task : MonoBehaviour
             Vector3 fingerPosition = fingerRaycaster.transform.position;
             RaycastHit hit;
 
-            if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f) && hit.collider.tag == "Target")
+            Debug.DrawRay(fingerPosition, fingerRaycaster.transform.right, Color.blue);
+            if (Physics.Raycast(fingerPosition, fingerRaycaster.transform.right/*Vector3.forward*/, out hit, 0.01f) && hit.collider.tag == "Target")
             {
                 // The player hit the target! Calculate score, play success sound,
                 // spawn success particles, give vibration feedback, reset target.
                 float distanceFromCenter = findPointDistanceFromCenter(hit.point);
-                trialScore = Target.ScoreTouch3(distanceFromCenter, curTime);
+                trialScore += Target.ScoreTouch3(distanceFromCenter, curTime);
                 touched = true;
                 GetComponent<SoundEffectPlayer>().PlaySuccessSound();
                 TriggerSuccessParticles();
@@ -357,13 +390,13 @@ public class Task : MonoBehaviour
     private void CheckLockedCollisions()
     {
         FingerRaycaster[] fingerRayArray = GetCorrectFingerArray();
-
+        
         foreach (FingerRaycaster fingerRaycaster in fingerRayArray)
         {
             Vector3 fingerPosition = fingerRaycaster.transform.position;
             RaycastHit hit;
-
-            if (Physics.Raycast(fingerPosition, Vector3.forward, out hit, 0.01f) && hit.collider.tag == "Target")
+            Debug.DrawRay(fingerPosition, fingerRaycaster.transform.right, Color.cyan);
+            if (Physics.Raycast(fingerPosition, fingerRaycaster.transform.right/*Vector3.forward*/, out hit, 0.01f) && hit.collider.tag == "Target")
             {
                 // The player touched a locked target so give light feedback
                 VibrateActiveControllerVerySoftly();
@@ -462,6 +495,7 @@ public class Task : MonoBehaviour
         // update trial score on canvas and update actual total score
         taskCanvas.UpdateTrialScoreText(trialScore);
         cumulativeScore = cumulativeScore + trialScore;
+        taskCanvas.UpdateTotalScoreText(cumulativeScore);
 
         // Record the data for this trial
         if (OnRecordData != null)
@@ -484,18 +518,22 @@ public class Task : MonoBehaviour
 
         if ((curGroupNumber < targetGroupSize) && (curTrial < numTrials))
         {
+            // Debug.Log("still in trial");
             // Reset trial only. Same group, so same sequence.
             ResetTrial();
         }
         else if (curTrial < numTrials)
         {
+           //  Debug.Log("new trial");
+
             ResetTrialAndGroup();
         }
         // task is over
         else
         {
+           //  Debug.Log("game over");
+
             TriggerGameOverParticles();
-            taskCanvas.UpdateTotalScoreText(cumulativeScore);
             taskCanvas.EnableGameOverText();
             gameOver = true;
         }

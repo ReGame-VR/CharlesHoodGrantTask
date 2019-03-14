@@ -132,8 +132,8 @@ namespace Assets.ManusVR.Scripts
 
         public void Awake()
         {
-            HandYawOffset.Add(device_type_t.GLOVE_RIGHT, -66.6666f); // -63.05431f
-            HandYawOffset.Add(device_type_t.GLOVE_LEFT, -66.6666f); // EW - the original offset desn't quite line up. this value is na aproximation thet may be improved on further testing
+            HandYawOffset.Add(device_type_t.GLOVE_RIGHT, 66.6666f); // -63.05431f
+            HandYawOffset.Add(device_type_t.GLOVE_LEFT, 66.6666f); // EW - the original offset desn't quite line up. this value is na aproximation thet may be improved on further testing
             // EW - proposal to move any changes out of sdk to prevent error on upgrade
         }
 
