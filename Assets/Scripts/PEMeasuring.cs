@@ -87,9 +87,13 @@ public class PEMeasuring : MonoBehaviour
             hand = leftHand;
         }
 
-
         // Add 10cm (0.1f) to this value to compensate for depth of hmd
         armLen = Mathf.Abs(hand.transform.position.z - hmd.transform.position.z) + 0.1f;
+        // Debug.Log("capturing length: " + armLen);
+        //var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //cube.transform.position = new Vector3(hmd.transform.position.x, hmd.transform.position.y, hmd.transform.position.z + armLen);
+        //cube.transform.localScale *= .02f;
+
         shoulderHeight = hand.transform.position.y;
 
         // standingposition is where the HMD is, currently over eyes

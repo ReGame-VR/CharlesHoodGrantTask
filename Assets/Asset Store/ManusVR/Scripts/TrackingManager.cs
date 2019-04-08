@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿// Copyright (c) 2018 ManusVR
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 
-namespace ManusVR
+namespace Assets.ManusVR.Scripts
 {
     public class TrackingManager : MonoBehaviour
     {
@@ -37,14 +38,16 @@ namespace ManusVR
         private ETrackedDeviceClass pTrackingToUse = ETrackedDeviceClass.GenericTracker;
 
         public Transform HMD;
-        public Transform leftTracker;
-        public Transform rightTracker;
+        public Transform LeftArm;
+        public Transform RightArm;
+        public static TrackingManager Instance;
         private Transform[] trackerTransforms;
 
         private TrackedDevice[] devices;
 
         SteamVR_Events.Action newPosesAction;
 
+        [Tooltip("Use this button to switch the left and right arm tracking device around.")]
         public KeyCode switchArmsButton = KeyCode.None;
 
         // Use this for initialization
@@ -54,8 +57,8 @@ namespace ManusVR
 
             trackerTransforms = new Transform[3];
             trackerTransforms[(int) ERole.HMD] = HMD;
-            trackerTransforms[(int) ERole.LeftHand] = leftTracker;
-            trackerTransforms[(int) ERole.RightHand] = rightTracker;
+            trackerTransforms[(int) ERole.LeftHand] = LeftArm;
+            trackerTransforms[(int) ERole.RightHand] = RightArm;
 
             int num = System.Enum.GetNames(typeof(ERole)).Length;
             devices = new TrackedDevice[num];
@@ -71,10 +74,26 @@ namespace ManusVR
                 GetIndex(i);
             }
 
+            bool _useTrackers = trackingToUse == TrackingManager.EUsableTracking.GenericTracker;
+
+            // Rotate the offsets of the TrackerOffset when the user is using controllers
+            Transform[] trackers = new Transform[2];
+            trackers[0] = LeftArm;
+            trackers[1] = RightArm;
+            if (!_useTrackers)
+                foreach (var trackerOffset in trackers) 
+                {
+                    trackerOffset.localRotation = Quaternion.Euler(90, -180, 0);
+                    var currentLocalPos = trackerOffset.localPosition;
+                    trackerOffset.localPosition = new Vector3(-currentLocalPos.x, -currentLocalPos.y, -currentLocalPos.z);
+                }
         }
 
         void Awake()
         {
+            if (Instance == null)
+                Instance = this;
+
             newPosesAction = SteamVR_Events.NewPosesAction(OnNewPoses);
         }
 
@@ -107,8 +126,15 @@ namespace ManusVR
         {
             if (Input.GetKeyDown(switchArmsButton))
             {
-                SwitchManusArms();
+                SwitchArms();
             }
+        }
+
+        public void SwitchArms()
+        {
+            Transform left = trackerTransforms[(int)ERole.LeftHand];
+            trackerTransforms[(int)ERole.LeftHand] = trackerTransforms[(int)ERole.RightHand];
+            trackerTransforms[(int)ERole.RightHand] = left;
         }
 
         private void OnNewPoses(TrackedDevicePose_t[] poses)
@@ -144,8 +170,8 @@ namespace ManusVR
                 var pose = new SteamVR_Utils.RigidTransform(poses[intIndex].mDeviceToAbsoluteTracking);
 
                 // make sure the offset is localized
-                trackerTransforms[deviceNum].localPosition = pose.pos;
-                trackerTransforms[deviceNum].localRotation = pose.rot;
+                trackerTransforms[deviceNum].position = transform.TransformPoint(pose.pos);
+                trackerTransforms[deviceNum].rotation = pose.rot * transform.rotation;
             }
         }
     
@@ -206,8 +232,8 @@ namespace ManusVR
             {
                 for (int i = 0; i < count; i++)
                 {
-                    leftTracker.localPosition = leftPositions[i];
-                    rightTracker.localPosition = rightPositions[i];
+                    LeftArm.localPosition = leftPositions[i];
+                    RightArm.localPosition = rightPositions[i];
                     yield return new WaitForFixedUpdate();
                     
                 }
@@ -220,29 +246,16 @@ namespace ManusVR
             {
                 for (int i = 0; i < count; i++)
                 {
-                    leftTracker.localPosition = leftPositions[i];
-                    rightTracker.localPosition = rightPositions[i];
-                    leftTracker.localRotation = leftRotations[i];
-                    rightTracker.localRotation = rightRotations[i];
-                    HMD.localPosition = headPositions[i];
-                    HMD.localRotation = headRotations[i];
+                    trackerTransforms[(int)ERole.LeftHand].localPosition = leftPositions[i];
+                    trackerTransforms[(int) ERole.LeftHand].localRotation = leftRotations[i];
+                    trackerTransforms[(int)ERole.RightHand].localPosition = rightPositions[i];
+                    trackerTransforms[(int) ERole.RightHand].localRotation = rightRotations[i];
+                    trackerTransforms[(int) ERole.HMD].localPosition = headPositions[i];
+                    trackerTransforms[(int) ERole.HMD].localRotation = headRotations[i];
                     yield return new WaitForFixedUpdate();
                     
                 }
             }
-        }
-
-        // A method made by Murray Sandmeyer to switch the Manus arms when
-        // necessary.
-        private void SwitchManusArms()
-        {
-            // Switch the indices around.
-            int leftNum = (int)ERole.LeftHand;
-            int rightNum = (int)ERole.RightHand;
-            int OldLeftIndex = devices[leftNum].index;
-
-            devices[leftNum].index = devices[rightNum].index;
-            devices[rightNum].index = OldLeftIndex;
         }
     }
 }

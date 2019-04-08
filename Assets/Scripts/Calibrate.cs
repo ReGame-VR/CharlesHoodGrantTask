@@ -172,15 +172,31 @@ public class Calibrate : MonoBehaviour {
     /// </summary>
     public void CaptureArmLengthShoulderHeight()
     {
+        GameObject hand;
+
         if (GlobalControl.Instance.rightHanded)
         {
-            armLen = Mathf.Abs(rightHand.transform.position.z - hmd.transform.position.z);
-            shoulderHeight = rightHand.transform.position.y;
+            hand = rightHand;
         }
         else
         {
-            armLen = Mathf.Abs(leftHand.transform.position.z - hmd.transform.position.z);
-            shoulderHeight = leftHand.transform.position.y;
+            hand = leftHand;
         }
+
+        shoulderHeight = hand.transform.position.y;
+        armLen = Mathf.Abs(hand.transform.position.z - hmd.transform.position.z) + 0.1f;
+
+        // EW commented for incorrect value
+        //if (GlobalControl.Instance.rightHanded)
+        //{
+
+        //    // armLen = Mathf.Abs(rightHand.transform.position.z - hmd.transform.position.z);
+        //    shoulderHeight = rightHand.transform.position.y;
+        //}
+        //else
+        //{
+        //    armLen = Mathf.Abs(leftHand.transform.position.z - hmd.transform.position.z);
+        //    shoulderHeight = leftHand.transform.position.y;
+        //}
     }
 }
