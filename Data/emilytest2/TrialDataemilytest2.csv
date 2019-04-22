@@ -1,0 +1,5 @@
+Participant ID,Using right hand?,Rotating Targets?,Trial Number,Global Time,Target Number,Target Time,Weight Shift Success?,Hit Success?,Random Sequence?,X Coord of COP,Y Coord of COP,COP Total Path,Trial Score,Accuracy Score,Time Score,Cumulative Accuracy Score,Cumulative Time Score,Cumulative Score,Reach Distance,Green Time,Yellow Time,Red Time,Preceding Green Time,Preceding Yellow Time,Preceding Red Time
+emilytest2,YES,NO,1,10.00007,2,10.00007,NO,NO,NO,-1.279648,-3.843067,39.19127,0,6.771088E-05,-6.771088E-05,6.771088E-05,-6.771088E-05,0,0,0,4.188879,5.811123,0,2.000027,0
+emilytest2,YES,NO,2,19.99986,3,10.00007,NO,NO,NO,1.295511,-2.18965,40.19427,0,6.771088E-05,-6.771088E-05,0.0001354218,-0.0001354218,0,0,0,9.84451,0.1555556,0,1.988745,0.02222061
+emilytest2,YES,NO,3,29.99913,4,10.00007,NO,NO,NO,-0.1724746,-4.533365,31.63622,0,6.771088E-05,-6.771088E-05,0.0002031326,-0.0002031326,0,0,0,0,10.00007,0,0,2.010965
+emilytest2,YES,NO,4,39.99978,5,10.00007,NO,NO,NO,-18.97693,-12.53796,449.8322,0,6.771088E-05,-6.771088E-05,0.0002708435,-0.0002708435,0,0,0.3222222,3.344437,6.333352,0,0,2.000198

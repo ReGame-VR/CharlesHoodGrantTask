@@ -86,6 +86,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4963918335340382}
   - component: {fileID: 114142409074078404}
+  - component: {fileID: 114963109960318812}
   m_Layer: 0
   m_Name: Right Hand
   m_TagString: Untagged
@@ -102,6 +103,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4504521520297086}
   - component: {fileID: 114168928764550988}
+  - component: {fileID: 114123006360848288}
   m_Layer: 0
   m_Name: Left Foot
   m_TagString: Untagged
@@ -133,6 +135,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4834190921318726}
   - component: {fileID: 114143981029284972}
+  - component: {fileID: 114918415961635292}
   m_Layer: 0
   m_Name: waist Tracker
   m_TagString: Untagged
@@ -149,6 +152,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4389740713013010}
   - component: {fileID: 114040570259349518}
+  - component: {fileID: 114368179100388644}
   m_Layer: 0
   m_Name: Right Foot
   m_TagString: Untagged
@@ -197,6 +201,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4868973999558598}
   - component: {fileID: 114105301680348000}
+  - component: {fileID: 114797147322263098}
   m_Layer: 0
   m_Name: Left Hand
   m_TagString: Untagged
@@ -541,7 +546,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1619291025418774}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a5fb0ca93b55ef4b8d54b512b103341, type: 3}
   m_Name: 
@@ -550,7 +555,7 @@ MonoBehaviour:
     actionPath: /actions/default/in/Pose
     needsReinit: 0
   inputSource: 4
-  origin: {fileID: 0}
+  origin: {fileID: 4284598071000848}
   onTransformUpdated:
     m_PersistentCalls:
       m_Calls: []
@@ -583,7 +588,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1958325532529484}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a5fb0ca93b55ef4b8d54b512b103341, type: 3}
   m_Name: 
@@ -592,7 +597,7 @@ MonoBehaviour:
     actionPath: /actions/default/in/Pose
     needsReinit: 0
   inputSource: 1
-  origin: {fileID: 0}
+  origin: {fileID: 4284598071000848}
   onTransformUpdated:
     m_PersistentCalls:
       m_Calls: []
@@ -619,13 +624,26 @@ MonoBehaviour:
     m_TypeName: Valve.VR.SteamVR_Behaviour_Pose_DeviceIndexChangedEvent, SteamVR,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   broadcastDeviceChanges: 1
+--- !u!114 &114123006360848288
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1449980742985300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 8
+  origin: {fileID: 4284598071000848}
 --- !u!114 &114142409074078404
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1434137432270552}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a5fb0ca93b55ef4b8d54b512b103341, type: 3}
   m_Name: 
@@ -634,7 +652,7 @@ MonoBehaviour:
     actionPath: /actions/default/in/Pose
     needsReinit: 0
   inputSource: 2
-  origin: {fileID: 0}
+  origin: {fileID: 4284598071000848}
   onTransformUpdated:
     m_PersistentCalls:
       m_Calls: []
@@ -667,7 +685,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1592666492720788}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a5fb0ca93b55ef4b8d54b512b103341, type: 3}
   m_Name: 
@@ -676,7 +694,7 @@ MonoBehaviour:
     actionPath: /actions/default/in/Pose
     needsReinit: 0
   inputSource: 7
-  origin: {fileID: 0}
+  origin: {fileID: 4284598071000848}
   onTransformUpdated:
     m_PersistentCalls:
       m_Calls: []
@@ -709,7 +727,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1449980742985300}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a5fb0ca93b55ef4b8d54b512b103341, type: 3}
   m_Name: 
@@ -718,7 +736,7 @@ MonoBehaviour:
     actionPath: /actions/default/in/Pose
     needsReinit: 0
   inputSource: 3
-  origin: {fileID: 0}
+  origin: {fileID: 4284598071000848}
   onTransformUpdated:
     m_PersistentCalls:
       m_Calls: []
@@ -745,3 +763,55 @@ MonoBehaviour:
     m_TypeName: Valve.VR.SteamVR_Behaviour_Pose_DeviceIndexChangedEvent, SteamVR,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   broadcastDeviceChanges: 1
+--- !u!114 &114368179100388644
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1619291025418774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 9
+  origin: {fileID: 4284598071000848}
+--- !u!114 &114797147322263098
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1958325532529484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 5
+  origin: {fileID: 4284598071000848}
+--- !u!114 &114918415961635292
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1592666492720788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 7
+  origin: {fileID: 4284598071000848}
+--- !u!114 &114963109960318812
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1434137432270552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 6
+  origin: {fileID: 4284598071000848}
