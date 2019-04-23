@@ -1,0 +1,6 @@
+Subject Id,Trial Number,Correct Object,Correct Position,Time To Open Door,Time To Place Object,Score
+test1,1,1,0,0.001,9.161,0.000
+test1,2,1,1,5.759,12.976,2.024
+test1,3,1,1,0.000,14.129,0.871
+test1,4,1,0,0.000,14.312,0.000
+test1,5,1,0,4.398,13.431,0.000
