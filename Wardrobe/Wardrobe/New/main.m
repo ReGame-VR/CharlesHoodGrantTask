@@ -4,10 +4,11 @@
 setupPaths;
 
 subjectId = input('Enter Subject ID:', 's');
+hand = input('Enter participant''s dominant hand (''R'' or ''L'', no quotes):', 's'); 
 
 %% Set Up App
 % Create an instance of the wardrobe app and initialize it
-app = Application();
+app = Application(hand);
 app.initialize();
 
 % Start running the trials
@@ -17,6 +18,7 @@ app.close();
 
 % Store results in matfile
 filename = [subjectId '-' datestr(now, 'yyyymmddTHHMMSS') '-results'];
+
 mf = matfile([filename '.mat']);
 mf.trialResults = trialResults;
 
